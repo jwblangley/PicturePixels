@@ -8,31 +8,31 @@ public class DifferenceFunctionTest {
 
   @Test
   public void differenceOfSelfIsZero() {
-    assertEquals(0, (int) integerDifference.apply(1,1));
+    assertEquals(0, (int) integerDifference.apply(1, 1));
   }
 
   @Test
-  public void differenceOfDifferingElementsIsCorrect(){
+  public void differenceOfDifferingElementsIsCorrect() {
     assertEquals(-4, (int) integerDifference.apply(1, 5));
   }
 
   @Test
   public void absoluteDifferenceOfSelfIsZero() {
-    assertEquals(0, (int) integerDifference.absoluteDifference(1,1));
+    assertEquals(0, (int) integerDifference.absoluteDifference(1, 1));
   }
 
   @Test
-  public void absoluteDifferenceOfDifferingElementsIsCorrect(){
+  public void absoluteDifferenceOfDifferingElementsIsCorrect() {
     assertEquals(4, (int) integerDifference.absoluteDifference(1, 5));
   }
 
   @Test
   public void squareDifferenceOfSelfIsZero() {
-    assertEquals(0, (int) integerDifference.squareDifference(1,1));
+    assertEquals(0, (int) integerDifference.squareDifference(1, 1));
   }
 
   @Test
-  public void squareDifferenceOfDifferingElementsIsCorrect(){
+  public void squareDifferenceOfDifferingElementsIsCorrect() {
     assertEquals(16, (int) integerDifference.squareDifference(1, 5));
   }
 

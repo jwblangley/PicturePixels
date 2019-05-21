@@ -27,6 +27,7 @@ public class LeastDifferenceTest {
 
     assertEquals(-1, diff);
   }
+
   @Test
   public void totalAbsoluteDifferenceOfSingleElementIsCorrect() {
     List<Integer> a = Arrays.asList(1);
@@ -56,6 +57,7 @@ public class LeastDifferenceTest {
 
     assertEquals(-2, diff);
   }
+
   @Test
   public void totalAbsoluteDifferenceOfElementsIsCorrect() {
     List<Integer> a = Arrays.asList(1, 2);
