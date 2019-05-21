@@ -8,12 +8,12 @@ public class DifferenceFunctionTest {
 
   @Test
   public void differenceOfSelfIsZero() {
-    assertEquals(0, (int) integerDifference.difference(1,1));
+    assertEquals(0, (int) integerDifference.apply(1,1));
   }
 
   @Test
   public void differenceOfDifferingElementsIsCorrect(){
-    assertEquals(-4, (int) integerDifference.difference(1, 5));
+    assertEquals(-4, (int) integerDifference.apply(1, 5));
   }
 
   @Test
