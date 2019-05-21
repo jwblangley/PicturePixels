@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.List;
+import jwblangley.difference.DifferenceFunction;
+import jwblangley.difference.LeastDifference;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -76,6 +78,15 @@ public class LeastDifferenceTest {
     int diff = LeastDifference.totalDifference(a, b, integerDifference::squareDifference);
 
     assertEquals(8, diff);
+  }
+
+  @Test
+  public void nearestNeighbourWithTargetAlreadyGivenIsCorrect() {
+    List<Integer> a = Arrays.asList(1, 2, 3, 4, 5);
+    List<Integer> b = Arrays.asList(1, 2, 3, 4, 5);
+
+    List<Integer> result = LeastDifference.nearestNeighbourMatch(a,b,integerDifference::absoluteDifference);
+    assertArrayEquals(new Integer[]{1,2,3,4,5}, result.toArray());
   }
 
 }

@@ -1,3 +1,5 @@
+package jwblangley.difference;
+
 @FunctionalInterface
 public interface DifferenceFunction<T> {
 
