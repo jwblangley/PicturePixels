@@ -1,27 +1,79 @@
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class LeastDifferenceTest {
 
-  private class IntegerDifference implements Difference<IntegerDifference> {
+  final DifferenceFunction<Integer> integerDifference = (a, b) -> a - b;
 
-    private final Integer val;
+  @Test
+  public void totalDifferenceOfSingleSameElementIsCorrect() {
+    List<Integer> a = Arrays.asList(1);
+    List<Integer> b = Arrays.asList(1);
 
-    private IntegerDifference(Integer val) {
-      this.val = val;
-    }
+    int diff = LeastDifference.totalDifference(a, b, integerDifference);
 
-    @Override
-    public int deltaFrom(IntegerDifference other) {
-      return val - other.val;
-    }
+    assertEquals(0, diff);
   }
 
   @Test
-  public void squareDifferenceOfSelfIsZero() {
-    IntegerDifference a = new IntegerDifference(1);
-    assertEquals(LeastDifference.squareDifference(a, a), 0);
+  public void totalDifferenceOfSingleElementIsCorrect() {
+    List<Integer> a = Arrays.asList(1);
+    List<Integer> b = Arrays.asList(2);
+
+    int diff = LeastDifference.totalDifference(a, b, integerDifference);
+
+    assertEquals(-1, diff);
+  }
+  @Test
+  public void totalAbsoluteDifferenceOfSingleElementIsCorrect() {
+    List<Integer> a = Arrays.asList(1);
+    List<Integer> b = Arrays.asList(2);
+
+    int diff = LeastDifference.totalDifference(a, b, integerDifference::absoluteDifference);
+
+    assertEquals(1, diff);
+  }
+
+  @Test
+  public void totalSquareDifferenceOfSingleElementIsCorrect() {
+    List<Integer> a = Arrays.asList(1);
+    List<Integer> b = Arrays.asList(3);
+
+    int diff = LeastDifference.totalDifference(a, b, integerDifference::squareDifference);
+
+    assertEquals(4, diff);
+  }
+
+  @Test
+  public void totalDifferenceOfElementsIsCorrect() {
+    List<Integer> a = Arrays.asList(1, 2);
+    List<Integer> b = Arrays.asList(2, 3);
+
+    int diff = LeastDifference.totalDifference(a, b, integerDifference);
+
+    assertEquals(-2, diff);
+  }
+  @Test
+  public void totalAbsoluteDifferenceOfElementsIsCorrect() {
+    List<Integer> a = Arrays.asList(1, 2);
+    List<Integer> b = Arrays.asList(2, 3);
+
+    int diff = LeastDifference.totalDifference(a, b, integerDifference::absoluteDifference);
+
+    assertEquals(2, diff);
+  }
+
+  @Test
+  public void totalSquareDifferenceOfElementsIsCorrect() {
+    List<Integer> a = Arrays.asList(1, 2);
+    List<Integer> b = Arrays.asList(3, 4);
+
+    int diff = LeastDifference.totalDifference(a, b, integerDifference::squareDifference);
+
+    assertEquals(8, diff);
   }
 
 }
