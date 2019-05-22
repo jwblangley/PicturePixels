@@ -17,7 +17,7 @@ public class Tile {
     this.imageFile = imageFile;
 
     try {
-      subtiles = calcualtePixels();
+      subtiles = calcualteSubtiles();
     } catch (IOException e) {
       // TODO: Handle exception
       e.printStackTrace();
@@ -32,7 +32,7 @@ public class Tile {
     return subtiles;
   }
 
-  private Color[][] calcualtePixels() throws IOException {
+  private Color[][] calcualteSubtiles() throws IOException {
     Color[][] subtiles = new Color[size][size];
 
     BufferedImage image = ImageIO.read(imageFile);
@@ -44,8 +44,9 @@ public class Tile {
       for (int i = 0; i < size; i++) {
 
         int[] tilePixels = new int[splitWidth * splitHeight];
-        image.getRGB(i * splitWidth, j * splitHeight, splitWidth, splitHeight, tilePixels, 0,
-            splitWidth);
+        image.getRGB(i * splitWidth, j * splitHeight,
+            splitWidth, splitHeight,
+            tilePixels, 0, splitWidth);
         subtiles[i][j] = averageColor(tilePixels);
       }
     }
