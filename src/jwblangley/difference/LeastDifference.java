@@ -1,5 +1,6 @@
 package jwblangley.difference;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -52,6 +53,7 @@ public class LeastDifference {
     List<T> bestResult = null;
 
     for (int i = 0; i < n; i++) {
+      Collections.shuffle(unorderedInput);
       List<T> result = nearestNeighbourMatch(unorderedInput, target, diffFunc);
       long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {
