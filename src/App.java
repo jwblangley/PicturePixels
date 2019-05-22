@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class App {
@@ -10,10 +11,14 @@ public class App {
     File testImages = new File("exampleImages/");
     assert testImages.isDirectory();
 
-    List<Tile> tiles = Arrays.stream(testImages.listFiles()).parallel()
+    int numImages = testImages.listFiles().length;
+    AtomicInteger progress = new AtomicInteger(0);
+
+    List<Tile> tiles = Arrays.stream(testImages.listFiles())
+        .parallel()
         .map(file -> {
           try {
-            System.out.println(file.getPath());
+            System.out.println(progress.incrementAndGet() + "/" + numImages);
             return Tile.ofImage(3, file);
           } catch (IOException e) {
             e.printStackTrace();
@@ -23,7 +28,6 @@ public class App {
         })
         .collect(Collectors.toList());
 
-    System.out.println("tiles.get(0) = " + tiles.get(0).getSubtiles()[0][0]);
 
   }
 }

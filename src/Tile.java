@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import javax.imageio.ImageIO;
 import jwblangley.difference.DifferenceFunction;
 
@@ -23,6 +24,9 @@ public class Tile {
 
   public static Tile ofImage(int size, File imageFile) throws IOException {
     BufferedImage image = ImageIO.read(imageFile);
+    if (image == null) {
+      throw new UnsupportedEncodingException("Cannot read file: " + imageFile.getAbsolutePath());
+    }
     return new Tile(size, image);
   }
 
