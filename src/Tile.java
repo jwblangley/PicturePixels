@@ -33,9 +33,13 @@ public class Tile {
   }
 
   private Color[][] calcualteSubtiles() throws IOException {
-    Color[][] subtiles = new Color[size][size];
-
     BufferedImage image = ImageIO.read(imageFile);
+
+    // Crop to square (top left corner)
+    int minDimension = image.getWidth() < image.getHeight() ? image.getWidth() : image.getHeight();
+    image = image.getSubimage(0, 0, minDimension, minDimension);
+
+    Color[][] subtiles = new Color[size][size];
 
     int splitWidth = image.getWidth() / size;
     int splitHeight = image.getHeight() / size;
