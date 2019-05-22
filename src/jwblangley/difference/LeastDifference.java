@@ -21,6 +21,8 @@ public class LeastDifference {
   public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput, List<T> target,
       DifferenceFunction<T> diffFunc) {
 
+    assert unorderedInput.size() >= target.size() : "Not enough input to match to target";
+
     List<T> result = new LinkedList<>();
 
     // N.B: initialised to all false
