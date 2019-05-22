@@ -40,17 +40,18 @@ public class Tile {
       for (int i = 0; i < size; i++) {
 
         int[] tilePixels = new int[splitWidth * splitHeight];
-        image.getRGB(i * splitWidth, j * splitHeight, splitWidth, splitHeight, tilePixels, 0, splitWidth);
+        image.getRGB(i * splitWidth, j * splitHeight, splitWidth, splitHeight, tilePixels, 0,
+            splitWidth);
         subtiles[i][j] = averageColor(tilePixels);
       }
     }
     return subtiles;
   }
 
-  private final Color averageColor(int[] colors) {
-    int totalRed=0;
-    int totalGreen=0;
-    int totalBlue=0;
+  private Color averageColor(int[] colors) {
+    int totalRed = 0;
+    int totalGreen = 0;
+    int totalBlue = 0;
     for (int rgb : colors) {
       Color c = new Color(rgb);
 
@@ -66,17 +67,17 @@ public class Tile {
     return new Color(totalRed, totalGreen, totalBlue);
   }
 
-  private static Integer delta(Tile a, Tile b) {
+  private static Long delta(Tile a, Tile b) {
     assert a.size == b.size
         : "Difference between two tiles is only valid for tiles of the same dimensions";
 
-    int totalDelta = 0;
+    long totalDelta = 0;
 
     for (int i = 0; i < a.size; i++) {
       for (int j = 0; j < a.size; j++) {
         int redDelta = a.subtiles[i][j].getRed() < b.subtiles[i][j].getRed()
             ? b.subtiles[i][j].getRed() - a.subtiles[i][j].getRed()
-            : a.subtiles[i][j].getRed() - b.subtiles[i][j].getRed() ;
+            : a.subtiles[i][j].getRed() - b.subtiles[i][j].getRed();
         int greenDelta = a.subtiles[i][j].getGreen() < b.subtiles[i][j].getGreen()
             ? b.subtiles[i][j].getGreen() - a.subtiles[i][j].getGreen()
             : a.subtiles[i][j].getGreen() - b.subtiles[i][j].getGreen();

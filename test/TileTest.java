@@ -29,7 +29,7 @@ public class TileTest {
     Tile a = new Tile(3, new File("test/rgbGrid.png"));
     Tile b = new Tile(3, new File("test/rgbGrid.png"));
 
-    assertEquals(0, (int) Tile.differenceFunction.apply(a,b));
+    assertEquals(0, (long) Tile.differenceFunction.apply(a, b));
 
   }
 

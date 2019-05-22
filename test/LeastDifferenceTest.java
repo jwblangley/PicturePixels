@@ -8,85 +8,86 @@ import static org.junit.Assert.*;
 
 public class LeastDifferenceTest {
 
-  final DifferenceFunction<Integer> integerDifference = (a, b) -> a - b;
+  final DifferenceFunction<Long> longDifference = (a, b) -> a - b;
 
   @Test
   public void totalDifferenceOfSingleSameElementIsCorrect() {
-    List<Integer> a = Arrays.asList(1);
-    List<Integer> b = Arrays.asList(1);
+    List<Long> a = Arrays.asList(1L);
+    List<Long> b = Arrays.asList(1L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference);
 
     assertEquals(0, diff);
   }
 
   @Test
   public void totalDifferenceOfSingleElementIsCorrect() {
-    List<Integer> a = Arrays.asList(1);
-    List<Integer> b = Arrays.asList(2);
+    List<Long> a = Arrays.asList(1L);
+    List<Long> b = Arrays.asList(2L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference);
 
     assertEquals(-1, diff);
   }
 
   @Test
   public void totalAbsoluteDifferenceOfSingleElementIsCorrect() {
-    List<Integer> a = Arrays.asList(1);
-    List<Integer> b = Arrays.asList(2);
+    List<Long> a = Arrays.asList(1L);
+    List<Long> b = Arrays.asList(2L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference::absoluteDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference::absoluteDifference);
 
     assertEquals(1, diff);
   }
 
   @Test
   public void totalSquareDifferenceOfSingleElementIsCorrect() {
-    List<Integer> a = Arrays.asList(1);
-    List<Integer> b = Arrays.asList(3);
+    List<Long> a = Arrays.asList(1L);
+    List<Long> b = Arrays.asList(3L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference::squareDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference::squareDifference);
 
     assertEquals(4, diff);
   }
 
   @Test
   public void totalDifferenceOfElementsIsCorrect() {
-    List<Integer> a = Arrays.asList(1, 2);
-    List<Integer> b = Arrays.asList(2, 3);
+    List<Long> a = Arrays.asList(1L, 2L);
+    List<Long> b = Arrays.asList(2L, 3L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference);
 
     assertEquals(-2, diff);
   }
 
   @Test
   public void totalAbsoluteDifferenceOfElementsIsCorrect() {
-    List<Integer> a = Arrays.asList(1, 2);
-    List<Integer> b = Arrays.asList(2, 3);
+    List<Long> a = Arrays.asList(1L, 2L);
+    List<Long> b = Arrays.asList(2L, 3L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference::absoluteDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference::absoluteDifference);
 
     assertEquals(2, diff);
   }
 
   @Test
   public void totalSquareDifferenceOfElementsIsCorrect() {
-    List<Integer> a = Arrays.asList(1, 2);
-    List<Integer> b = Arrays.asList(3, 4);
+    List<Long> a = Arrays.asList(1L, 2L);
+    List<Long> b = Arrays.asList(3L, 4L);
 
-    int diff = LeastDifference.totalDifference(a, b, integerDifference::squareDifference);
+    long diff = LeastDifference.totalDifference(a, b, longDifference::squareDifference);
 
     assertEquals(8, diff);
   }
 
   @Test
   public void nearestNeighbourWithTargetAlreadyGivenIsCorrect() {
-    List<Integer> a = Arrays.asList(1, 2, 3, 4, 5);
-    List<Integer> b = Arrays.asList(1, 2, 3, 4, 5);
+    List<Long> a = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+    List<Long> b = Arrays.asList(1L, 2L, 3L, 4L, 5L);
 
-    List<Integer> result = LeastDifference.nearestNeighbourMatch(a,b,integerDifference::absoluteDifference);
-    assertArrayEquals(new Integer[]{1,2,3,4,5}, result.toArray());
+    List<Long> result = LeastDifference
+        .nearestNeighbourMatch(a, b, longDifference::absoluteDifference);
+    assertArrayEquals(new Long[]{1L, 2L, 3L, 4L, 5L}, result.toArray());
   }
 
 }

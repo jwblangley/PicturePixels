@@ -26,11 +26,11 @@ public class LeastDifference {
     boolean[] used = new boolean[unorderedInput.size()];
 
     for (int i = 0; i < target.size(); i++) {
-      int minDiff = Integer.MAX_VALUE;
+      long minDiff = Integer.MAX_VALUE;
       int minIndex = -1;
       for (int j = 0; j < unorderedInput.size(); j++) {
         if (!used[j]) {
-          int diff = diffFunc.absoluteDifference(target.get(i), unorderedInput.get(j));
+          long diff = diffFunc.absoluteDifference(target.get(i), unorderedInput.get(j));
           if (diff < minDiff) {
             minDiff = diff;
             minIndex = j;
@@ -48,12 +48,12 @@ public class LeastDifference {
       List<T> target, DifferenceFunction<T> diffFunc) {
     assert n > 0 : "Cannot repeat < 0 times";
 
-    int minTotal = Integer.MAX_VALUE;
+    long minTotal = Long.MAX_VALUE;
     List<T> bestResult = null;
 
     for (int i = 0; i < n; i++) {
       List<T> result = nearestNeighbourMatch(unorderedInput, target, diffFunc);
-      int totalDiff = totalDifference(result, target, diffFunc);
+      long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {
         minTotal = totalDiff;
         bestResult = result;
@@ -62,12 +62,12 @@ public class LeastDifference {
     return bestResult;
   }
 
-  public static <T> int totalDifference(List<T> input, List<T> target,
+  public static <T> long totalDifference(List<T> input, List<T> target,
       DifferenceFunction<T> diffFunc) {
     assert input.size() == target.size() : "List sizes must match when comparing apply";
 
     return IntStream.range(0, input.size())
-        .map(i -> diffFunc.apply(input.get(i), target.get(i)))
+        .mapToLong(i -> diffFunc.apply(input.get(i), target.get(i)))
         .sum();
   }
 
