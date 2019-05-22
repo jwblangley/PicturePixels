@@ -3,11 +3,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import jwblangley.difference.DifferenceFunction;
 
 public class Tile {
 
   private final int size;
-  private Color[][] tiles;
+  private Color[][] subtiles;
 
   private final File imageFile;
 
@@ -16,19 +17,19 @@ public class Tile {
     this.imageFile = imageFile;
 
     try {
-      tiles = calcualtePixels();
+      subtiles = calcualtePixels();
     } catch (IOException e) {
       // TODO: Handle exception
       e.printStackTrace();
     }
   }
 
-  public Color[][] getTiles() {
-    return tiles;
+  public Color[][] getSubtiles() {
+    return subtiles;
   }
 
   private Color[][] calcualtePixels() throws IOException {
-    Color[][] tiles = new Color[size][size];
+    Color[][] subtiles = new Color[size][size];
 
     BufferedImage image = ImageIO.read(imageFile);
 
@@ -40,10 +41,10 @@ public class Tile {
 
         int[] tilePixels = new int[splitWidth * splitHeight];
         image.getRGB(i * splitWidth, j * splitHeight, splitWidth, splitHeight, tilePixels, 0, splitWidth);
-        tiles[i][j] = averageColor(tilePixels);
+        subtiles[i][j] = averageColor(tilePixels);
       }
     }
-    return tiles;
+    return subtiles;
   }
 
   private final Color averageColor(int[] colors) {
@@ -64,4 +65,30 @@ public class Tile {
 
     return new Color(totalRed, totalGreen, totalBlue);
   }
+
+  private static Integer delta(Tile a, Tile b) {
+    assert a.size == b.size
+        : "Difference between two tiles is only valid for tiles of the same dimensions";
+
+    int totalDelta = 0;
+
+    for (int i = 0; i < a.size; i++) {
+      for (int j = 0; j < a.size; j++) {
+        int redDelta = a.subtiles[i][j].getRed() < b.subtiles[i][j].getRed()
+            ? b.subtiles[i][j].getRed() - a.subtiles[i][j].getRed()
+            : a.subtiles[i][j].getRed() - b.subtiles[i][j].getRed() ;
+        int greenDelta = a.subtiles[i][j].getGreen() < b.subtiles[i][j].getGreen()
+            ? b.subtiles[i][j].getGreen() - a.subtiles[i][j].getGreen()
+            : a.subtiles[i][j].getGreen() - b.subtiles[i][j].getGreen();
+        int blueDelta = a.subtiles[i][j].getBlue() < b.subtiles[i][j].getBlue()
+            ? b.subtiles[i][j].getBlue() - a.subtiles[i][j].getBlue()
+            : a.subtiles[i][j].getBlue() - b.subtiles[i][j].getBlue();
+        totalDelta += redDelta + greenDelta + blueDelta;
+      }
+    }
+
+    return totalDelta;
+  }
+
+  public static DifferenceFunction<Tile> differenceFunction = Tile::delta;
 }
