@@ -27,7 +27,7 @@ public class Tile {
     }
   }
 
-  public static Tile ofImage(int size, File imageFile) throws IOException {
+  public static Tile ofImageFile(int size, File imageFile) throws IOException {
     BufferedImage image = ImageIO.read(imageFile);
     if (image == null) {
       throw new UnsupportedEncodingException("Cannot read file: " + imageFile.getAbsolutePath());
