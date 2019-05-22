@@ -12,7 +12,7 @@ public class Tile {
 
   private final File imageFile;
 
-  public Tile(int size, File imageFile) {
+  private Tile(int size, File imageFile) {
     this.size = size;
     this.imageFile = imageFile;
 
@@ -22,6 +22,10 @@ public class Tile {
       // TODO: Handle exception
       e.printStackTrace();
     }
+  }
+
+  public static Tile ofImage(int size, File imageFile) {
+    return new Tile(size, imageFile);
   }
 
   public Color[][] getSubtiles() {

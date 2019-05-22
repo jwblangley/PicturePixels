@@ -8,7 +8,7 @@ public class TileTest {
 
   @Test
   public void tileSeparatesRegionsCorrectly() {
-    Tile testTile = new Tile(3, new File("test/rgbGrid.png"));
+    Tile testTile = Tile.ofImage(3, new File("test/rgbGrid.png"));
 
     Color[][] tiles = testTile.getSubtiles();
     assertEquals(Color.RED, tiles[0][0]);
@@ -26,8 +26,8 @@ public class TileTest {
 
   @Test
   public void differenceBetweenTwoIdentialTilesIsZero() {
-    Tile a = new Tile(3, new File("test/rgbGrid.png"));
-    Tile b = new Tile(3, new File("test/rgbGrid.png"));
+    Tile a = Tile.ofImage(3, new File("test/rgbGrid.png"));
+    Tile b = Tile.ofImage(3, new File("test/rgbGrid.png"));
 
     assertEquals(0, (long) Tile.differenceFunction.apply(a, b));
 
