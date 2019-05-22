@@ -10,30 +10,27 @@ public class Tile {
   private final int size;
   private Color[][] subtiles;
 
-  private final File imageFile;
-
-  private Tile(int size, File imageFile) {
+  private Tile(int size, BufferedImage image) {
     this.size = size;
-    this.imageFile = imageFile;
 
     try {
-      subtiles = calcualteSubtiles();
+      subtiles = calculateSubtiles(image);
     } catch (IOException e) {
       // TODO: Handle exception
       e.printStackTrace();
     }
   }
 
-  public static Tile ofImage(int size, File imageFile) {
-    return new Tile(size, imageFile);
+  public static Tile ofImage(int size, File imageFile) throws IOException {
+    BufferedImage image = ImageIO.read(imageFile);
+    return new Tile(size, image);
   }
 
   public Color[][] getSubtiles() {
     return subtiles;
   }
 
-  private Color[][] calcualteSubtiles() throws IOException {
-    BufferedImage image = ImageIO.read(imageFile);
+  private Color[][] calculateSubtiles(BufferedImage image) throws IOException {
 
     // Crop to square (top left corner)
     int minDimension = image.getWidth() < image.getHeight() ? image.getWidth() : image.getHeight();

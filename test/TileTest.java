@@ -2,12 +2,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import org.junit.Test;
 
 public class TileTest {
 
   @Test
-  public void tileSeparatesRegionsCorrectly() {
+  public void tileSeparatesRegionsCorrectly() throws IOException {
     Tile testTile = Tile.ofImage(3, new File("test/rgbGrid.png"));
 
     Color[][] tiles = testTile.getSubtiles();
@@ -25,7 +26,7 @@ public class TileTest {
   }
 
   @Test
-  public void differenceBetweenTwoIdentialTilesIsZero() {
+  public void differenceBetweenTwoIdentialTilesIsZero() throws IOException {
     Tile a = Tile.ofImage(3, new File("test/rgbGrid.png"));
     Tile b = Tile.ofImage(3, new File("test/rgbGrid.png"));
 
