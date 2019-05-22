@@ -11,14 +11,19 @@ public class Tile {
   private final int size;
   private Color[][] subtiles;
 
-  private Tile(int size, BufferedImage image) {
-    this.size = size;
+  private final boolean isNull;
 
-    try {
-      subtiles = calculateSubtiles(image);
-    } catch (IOException e) {
-      // TODO: Handle exception
-      e.printStackTrace();
+  private Tile(int size, BufferedImage image, boolean isNull) {
+    this.size = size;
+    this.isNull = isNull;
+
+    if (!isNull) {
+      try {
+        subtiles = calculateSubtiles(image);
+      } catch (IOException e) {
+        // TODO: Handle exception
+        e.printStackTrace();
+      }
     }
   }
 
@@ -27,11 +32,19 @@ public class Tile {
     if (image == null) {
       throw new UnsupportedEncodingException("Cannot read file: " + imageFile.getAbsolutePath());
     }
-    return new Tile(size, image);
+    return new Tile(size, image, false);
+  }
+
+  public static Tile nullTile() {
+    return new Tile(-1, null, true);
   }
 
   public Color[][] getSubtiles() {
     return subtiles;
+  }
+
+  public boolean isNull() {
+    return isNull;
   }
 
   private Color[][] calculateSubtiles(BufferedImage image) throws IOException {
@@ -80,6 +93,7 @@ public class Tile {
   private static Long delta(Tile a, Tile b) {
     assert a.size == b.size
         : "Difference between two tiles is only valid for tiles of the same dimensions";
+    assert !a.isNull && !b.isNull : "Cannot calculate the difference between null tiles";
 
     long totalDelta = 0;
 
