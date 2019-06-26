@@ -8,13 +8,13 @@ import jwblangley.difference.DifferenceFunction;
 
 public class Tile {
 
-  private final int size;
+  private final int numSubtiles;
   private Color[][] subtiles;
 
   private final boolean isNull;
 
-  private Tile(int size, BufferedImage image, boolean isNull) {
-    this.size = size;
+  private Tile(int numSubtiles, BufferedImage image, boolean isNull) {
+    this.numSubtiles = numSubtiles;
     this.isNull = isNull;
 
     if (!isNull) {
@@ -27,12 +27,16 @@ public class Tile {
     }
   }
 
-  public static Tile ofImageFile(int size, File imageFile) throws IOException {
+  public static Tile ofImageFile(int numSubtiles, File imageFile) throws IOException {
     BufferedImage image = ImageIO.read(imageFile);
     if (image == null) {
       throw new UnsupportedEncodingException("Cannot read file: " + imageFile.getAbsolutePath());
     }
-    return new Tile(size, image, false);
+    return new Tile(numSubtiles, image, false);
+  }
+
+  public static Tile ofBufferedImage(int numSubtiles, BufferedImage image) {
+    return new Tile(numSubtiles, image, false);
   }
 
   public static Tile nullTile() {
@@ -53,13 +57,13 @@ public class Tile {
     int minDimension = image.getWidth() < image.getHeight() ? image.getWidth() : image.getHeight();
     image = image.getSubimage(0, 0, minDimension, minDimension);
 
-    Color[][] subtiles = new Color[size][size];
+    Color[][] subtiles = new Color[numSubtiles][numSubtiles];
 
-    int splitWidth = image.getWidth() / size;
-    int splitHeight = image.getHeight() / size;
+    int splitWidth = image.getWidth() / numSubtiles;
+    int splitHeight = image.getHeight() / numSubtiles;
 
-    for (int j = 0; j < size; j++) {
-      for (int i = 0; i < size; i++) {
+    for (int j = 0; j < numSubtiles; j++) {
+      for (int i = 0; i < numSubtiles; i++) {
 
         int[] tilePixels = new int[splitWidth * splitHeight];
         image.getRGB(i * splitWidth, j * splitHeight,
@@ -91,14 +95,14 @@ public class Tile {
   }
 
   private static Long delta(Tile a, Tile b) {
-    assert a.size == b.size
+    assert a.numSubtiles == b.numSubtiles
         : "Difference between two tiles is only valid for tiles of the same dimensions";
     assert !a.isNull && !b.isNull : "Cannot calculate the difference between null tiles";
 
     long totalDelta = 0;
 
-    for (int i = 0; i < a.size; i++) {
-      for (int j = 0; j < a.size; j++) {
+    for (int i = 0; i < a.numSubtiles; i++) {
+      for (int j = 0; j < a.numSubtiles; j++) {
         int redDelta = a.subtiles[i][j].getRed() < b.subtiles[i][j].getRed()
             ? b.subtiles[i][j].getRed() - a.subtiles[i][j].getRed()
             : a.subtiles[i][j].getRed() - b.subtiles[i][j].getRed();

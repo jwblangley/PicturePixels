@@ -1,7 +1,7 @@
+import static org.junit.Assert.assertEquals;
+
 import jwblangley.difference.DifferenceFunction;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class DifferenceFunctionTest {
 
