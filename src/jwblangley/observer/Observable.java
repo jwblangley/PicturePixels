@@ -1,8 +1,10 @@
 package jwblangley.observer;
 
-public interface Observable<P> {
+public interface Observable {
 
-  void addObserver(Observer<P> observer);
+  void addObserver(Observer observer);
 
-  void notifyObservers(P param);
+  void removeObserver(Observer observer);
+
+  void notifyObservers();
 }

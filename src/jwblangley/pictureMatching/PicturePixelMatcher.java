@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import jwblangley.observer.Observable;
 import jwblangley.observer.Observer;
@@ -18,20 +19,24 @@ import jwblangley.tile.Tile;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
-public class PicturePixelMatcher implements Observable<Tile> {
+public class PicturePixelMatcher implements Observable {
 
-  List<Observer<Tile>> observers = new LinkedList<>();
+  List<Observer> observers = new LinkedList<>();
 
   @Override
-  public void addObserver(Observer<Tile> observer) {
+  public void addObserver(Observer observer) {
     observers.add(observer);
   }
 
   @Override
-  public void notifyObservers(Tile param) {
-    for (Observer<Tile> observer : observers) {
-      observer.onNotified(param);
-    }
+  public void removeObserver(Observer observer) {
+    observers.remove(observer);
+  }
+
+  // Used for progress updates
+  @Override
+  public void notifyObservers() {
+    observers.forEach(Observer::onNotified);
   }
 
   public List<Tile> generateTilesFromImage(BufferedImage targetImage, int numSubtiles, int tileMatchSize) {
@@ -69,7 +74,7 @@ public class PicturePixelMatcher implements Observable<Tile> {
         .map(file -> {
           try {
             Tile tile = Tile.ofImageFile(numSubtiles, file);
-            notifyObservers(tile);
+            notifyObservers();
             return tile;
           } catch (Exception e) {
             return Tile.nullTile();
@@ -94,14 +99,13 @@ public class PicturePixelMatcher implements Observable<Tile> {
 
     Graphics g = resultImage.getGraphics();
 
-    for (int i = 0; i < chosenTiles.size(); i++) {
+    IntStream.range(0, chosenTiles.size()).parallel().forEach(i -> {
       Tile tile = chosenTiles.get(i);
       int y = i / numTilesWidth;
       int x = i % numTilesWidth;
 
       BufferedImage toDraw = null;
       try {
-        System.out.println(tile.getSource());
         toDraw = ImageIO.read(tile.getSource());
       } catch (IOException e) {
         //TODO: handle exception
@@ -112,8 +116,8 @@ public class PicturePixelMatcher implements Observable<Tile> {
       g.drawImage(toDraw, x * tileRenderSize, y * tileRenderSize, tileRenderSize,
           tileRenderSize, null);
 
-      System.out.println("Rereading " + i + "/" + chosenTiles.size());
-    }
+      notifyObservers();
+    });
 
     return resultImage;
   }

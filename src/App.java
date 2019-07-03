@@ -53,15 +53,18 @@ public class App {
 
     // Set up observer for progress
     File inputDirectory = new File(INPUT_DIRECTORY);
-    AtomicInteger progressCounter = new AtomicInteger(0);
-    Observer<Tile> progessObserver = tile -> {
+    AtomicInteger inputProgressCounter = new AtomicInteger(0);
+    Observer inputProgressObserver = () -> {
       // Acts as CLI view
-      System.out.println(String.format("%d/%d", progressCounter.incrementAndGet(), inputDirectory.listFiles().length));
+      System.out.println(String.format("%d/%d", inputProgressCounter.incrementAndGet(), inputDirectory.listFiles().length));
     };
-    picturePixelMatcher.addObserver(progessObserver);
+    picturePixelMatcher.addObserver(inputProgressObserver);
 
     // Generate input tiles
     List<Tile> inputTiles = picturePixelMatcher.generateTilesFromDirectory(inputDirectory, NUM_SUBTILES);
+
+    // Remove observer to allow reread progress
+    picturePixelMatcher.removeObserver(inputProgressObserver);
 
     // Calculate match
     List<Tile> resultList = LeastDifference.repeatNearestNeighbourMatch(
@@ -70,10 +73,19 @@ public class App {
         targetTiles,
         Tile.differenceFunction::absoluteDifference);
 
+    // Set up observer for progress
+    AtomicInteger resultProgressCounter = new AtomicInteger(0);
+    Observer resultProgressObserver = () -> {
+      // Acts as CLI view
+      System.out.println(String.format("Rereading: %d/%d", resultProgressCounter.incrementAndGet(), resultList.size()));
+    };
+    picturePixelMatcher.addObserver(resultProgressObserver);
+
     // Generate resulting image
     BufferedImage resultImage
         = picturePixelMatcher.generateResultingImage(resultList, numTilesWidth, numTilesHeight, TILE_RENDER_SIZE);
 
+    // Write resulting image
     try {
       ImageIO.write(resultImage, "png", new File("output.png"));
       System.out.println("Written");

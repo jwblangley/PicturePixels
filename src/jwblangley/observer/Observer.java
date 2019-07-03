@@ -1,7 +1,7 @@
 package jwblangley.observer;
 
-public interface Observer<P> {
+public interface Observer {
 
-  void onNotified(P param);
+  void onNotified();
 
 }
