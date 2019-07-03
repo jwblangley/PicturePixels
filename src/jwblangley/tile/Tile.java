@@ -17,8 +17,11 @@ public class Tile {
 
   private final boolean isNull;
 
-  private Tile(int numSubtiles, BufferedImage image, boolean isNull) {
+  private File source;
+
+  private Tile(int numSubtiles, BufferedImage image, File source, boolean isNull) {
     this.numSubtiles = numSubtiles;
+    this.source = source;
     this.isNull = isNull;
 
     if (!isNull) {
@@ -36,15 +39,15 @@ public class Tile {
     if (image == null) {
       throw new UnsupportedEncodingException("Cannot read file: " + imageFile.getAbsolutePath());
     }
-    return new Tile(numSubtiles, image, false);
+    return new Tile(numSubtiles, image, imageFile, false);
   }
 
   public static Tile ofBufferedImage(int numSubtiles, BufferedImage image) {
-    return new Tile(numSubtiles, image, false);
+    return new Tile(numSubtiles, image, null, false);
   }
 
   public static Tile nullTile() {
-    return new Tile(-1, null, true);
+    return new Tile(-1, null, null, true);
   }
 
   public Color[][] getSubtiles() {
@@ -53,6 +56,10 @@ public class Tile {
 
   public boolean isNull() {
     return isNull;
+  }
+
+  public File getSource() {
+    return source;
   }
 
   private Color[][] calculateSubtiles(BufferedImage image) throws IOException {
