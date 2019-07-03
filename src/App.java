@@ -11,6 +11,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import jwblangley.difference.LeastDifference;
+import jwblangley.tile.Tile;
+import jwblangley.utils.CropType;
+import jwblangley.utils.ImageUtils;
 
 public class App {
 
@@ -111,10 +114,7 @@ public class App {
         //TODO: handle exception
       }
 
-      // Crop to square (top left corner)
-      int minDimension = toDraw.getWidth() < toDraw.getHeight()
-          ? toDraw.getWidth() : toDraw.getHeight();
-      toDraw = toDraw.getSubimage(0, 0, minDimension, minDimension);
+      toDraw = ImageUtils.cropSquare(toDraw, CropType.CENTER);
 
       g.drawImage(toDraw, x * TILE_RENDER_SIZE, y * TILE_RENDER_SIZE, TILE_RENDER_SIZE,
           TILE_RENDER_SIZE, null);

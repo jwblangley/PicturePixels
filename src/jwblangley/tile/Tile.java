@@ -1,3 +1,5 @@
+package jwblangley.tile;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -5,6 +7,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import javax.imageio.ImageIO;
 import jwblangley.difference.DifferenceFunction;
+import jwblangley.utils.CropType;
+import jwblangley.utils.ImageUtils;
 
 public class Tile {
 
@@ -53,9 +57,7 @@ public class Tile {
 
   private Color[][] calculateSubtiles(BufferedImage image) throws IOException {
 
-    // Crop to square (top left corner)
-    int minDimension = image.getWidth() < image.getHeight() ? image.getWidth() : image.getHeight();
-    image = image.getSubimage(0, 0, minDimension, minDimension);
+    image = ImageUtils.cropSquare(image, CropType.CENTER);
 
     Color[][] subtiles = new Color[numSubtiles][numSubtiles];
 
