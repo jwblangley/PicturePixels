@@ -1,21 +1,13 @@
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import jwblangley.difference.LeastDifference;
 import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
-import jwblangley.tile.Tile;
-import jwblangley.utils.CropType;
-import jwblangley.utils.ImageUtils;
+import jwblangley.pictureMatching.Tile;
 
 public class App {
 
@@ -34,6 +26,8 @@ public class App {
   public static void main(String[] args) {
 
     PicturePixelMatcher picturePixelMatcher = new PicturePixelMatcher();
+    picturePixelMatcher.setNumSubtiles(NUM_SUBTILES);
+    picturePixelMatcher.setInputDirectory(new File(INPUT_DIRECTORY));
 
     // Read in target image
     BufferedImage targetImage = null;
@@ -44,12 +38,14 @@ public class App {
       e.printStackTrace();
     }
 
+    picturePixelMatcher.setTargetImage(targetImage);
+
     int numTilesWidth = targetImage.getWidth() / TILE_MATCH_SIZE;
     int numTilesHeight = targetImage.getHeight() / TILE_MATCH_SIZE;
 
     // Generate targetTiles
     List<Tile> targetTiles
-        = picturePixelMatcher.generateTilesFromImage(targetImage, NUM_SUBTILES, TILE_MATCH_SIZE);
+        = picturePixelMatcher.generateTilesFromImage(TILE_MATCH_SIZE);
 
     // Set up observer for progress
     File inputDirectory = new File(INPUT_DIRECTORY);
@@ -61,7 +57,7 @@ public class App {
     picturePixelMatcher.addObserver(inputProgressObserver);
 
     // Generate input tiles
-    List<Tile> inputTiles = picturePixelMatcher.generateTilesFromDirectory(inputDirectory, NUM_SUBTILES);
+    List<Tile> inputTiles = picturePixelMatcher.generateTilesFromDirectory();
 
     // Remove observer to allow reread progress
     picturePixelMatcher.removeObserver(inputProgressObserver);
@@ -83,7 +79,7 @@ public class App {
 
     // Generate resulting image
     BufferedImage resultImage
-        = picturePixelMatcher.generateResultingImage(resultList, numTilesWidth, numTilesHeight, TILE_RENDER_SIZE);
+        = picturePixelMatcher.collateResultFromImages(resultList, numTilesWidth, numTilesHeight, TILE_RENDER_SIZE);
 
     // Write resulting image
     try {

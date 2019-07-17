@@ -1,4 +1,4 @@
-package jwblangley.tile;
+package jwblangley.pictureMatching;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

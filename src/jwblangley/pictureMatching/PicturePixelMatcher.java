@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import jwblangley.observer.Observable;
 import jwblangley.observer.Observer;
-import jwblangley.tile.Tile;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
@@ -23,6 +22,23 @@ public class PicturePixelMatcher implements Observable {
 
   List<Observer> observers = new LinkedList<>();
 
+  private BufferedImage targetImage;
+  private int numSubtiles;
+  private File inputDirectory;
+
+  public void setTargetImage(BufferedImage targetImage) {
+    this.targetImage = targetImage;
+  }
+
+  public void setNumSubtiles(int numSubtiles) {
+    this.numSubtiles = numSubtiles;
+  }
+
+  public void setInputDirectory(File inputDirectory) {
+    this.inputDirectory = inputDirectory;
+  }
+
+  // Used for progress updates
   @Override
   public void addObserver(Observer observer) {
     observers.add(observer);
@@ -33,13 +49,14 @@ public class PicturePixelMatcher implements Observable {
     observers.remove(observer);
   }
 
-  // Used for progress updates
   @Override
   public void notifyObservers() {
     observers.forEach(Observer::onNotified);
   }
 
-  public List<Tile> generateTilesFromImage(BufferedImage targetImage, int numSubtiles, int tileMatchSize) {
+
+
+  public List<Tile> generateTilesFromImage(int tileMatchSize) {
     assert targetImage.getWidth() > tileMatchSize
         : "Input image is not large enough for specified tile layout";
     assert targetImage.getHeight() > tileMatchSize
@@ -61,7 +78,7 @@ public class PicturePixelMatcher implements Observable {
     return targetTiles;
   }
 
-  public List<Tile> generateTilesFromDirectory(File inputDirectory, int numSubtiles) {
+  public List<Tile> generateTilesFromDirectory() {
     assert inputDirectory.isDirectory() : "Must be given a directory";
 
     int numFiles = inputDirectory.listFiles().length;
@@ -91,7 +108,9 @@ public class PicturePixelMatcher implements Observable {
     return tiles;
   }
 
-  public BufferedImage generateResultingImage(List<Tile> chosenTiles, int numTilesWidth, int numTilesHeight, int tileRenderSize) {
+  public BufferedImage collateResultFromImages(List<Tile> tiles, int numTilesWidth, int numTilesHeight, int tileRenderSize) {
+    assert tiles != null && tiles.size() == numTilesWidth * numTilesHeight: "Incorrect number of tiles for dimensions specified";
+
     BufferedImage resultImage
         = new BufferedImage(tileRenderSize * numTilesWidth,
         tileRenderSize * numTilesHeight,
@@ -99,8 +118,8 @@ public class PicturePixelMatcher implements Observable {
 
     Graphics g = resultImage.getGraphics();
 
-    IntStream.range(0, chosenTiles.size()).parallel().forEach(i -> {
-      Tile tile = chosenTiles.get(i);
+    IntStream.range(0, tiles.size()).parallel().forEach(i -> {
+      Tile tile = tiles.get(i);
       int y = i / numTilesWidth;
       int x = i % numTilesWidth;
 
@@ -121,5 +140,4 @@ public class PicturePixelMatcher implements Observable {
 
     return resultImage;
   }
-
 }
