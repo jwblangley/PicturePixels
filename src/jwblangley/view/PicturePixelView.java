@@ -77,7 +77,9 @@ public class PicturePixelView extends JFrame {
     // TODO: add option setters
 
     JButton runButton = new JButton("Run");
-    runButton.addActionListener(actionEvent -> runPicturePixels());
+    runButton.addActionListener(actionEvent ->
+        // Run in new thread to keep main thread free for user interactions
+        new Thread(this::runPicturePixels).start());
     backPanel.add(runButton, BorderLayout.PAGE_END);
 
     this.pack();
