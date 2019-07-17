@@ -24,6 +24,8 @@ public class PicturePixelMatcher implements Observable {
 
   private BufferedImage targetImage;
   private int numSubtiles;
+  private int tileMatchSize;
+
   private File inputDirectory;
 
   public void setTargetImage(BufferedImage targetImage) {
@@ -32,6 +34,14 @@ public class PicturePixelMatcher implements Observable {
 
   public void setNumSubtiles(int numSubtiles) {
     this.numSubtiles = numSubtiles;
+  }
+
+  public void setTileMatchSize(int tileMatchSize) {
+    this.tileMatchSize = tileMatchSize;
+  }
+
+  public File getInputDirectory() {
+    return inputDirectory;
   }
 
   public void setInputDirectory(File inputDirectory) {
@@ -54,9 +64,15 @@ public class PicturePixelMatcher implements Observable {
     observers.forEach(Observer::onNotified);
   }
 
+  public int getNumRequired() {
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize;
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize;
+    return numTilesWidth * numTilesHeight;
+  }
 
 
-  public List<Tile> generateTilesFromImage(int tileMatchSize) {
+
+  public List<Tile> generateTilesFromImage() {
     assert targetImage.getWidth() > tileMatchSize
         : "Input image is not large enough for specified tile layout";
     assert targetImage.getHeight() > tileMatchSize
@@ -108,8 +124,12 @@ public class PicturePixelMatcher implements Observable {
     return tiles;
   }
 
-  public BufferedImage collateResultFromImages(List<Tile> tiles, int numTilesWidth, int numTilesHeight, int tileRenderSize) {
-    assert tiles != null && tiles.size() == numTilesWidth * numTilesHeight: "Incorrect number of tiles for dimensions specified";
+  public BufferedImage collateResultFromImages(List<Tile> tiles, int tileRenderSize) {
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize;
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize;
+
+    assert tiles != null && tiles.size() == numTilesWidth * numTilesHeight
+        : "Incorrect number of tiles for dimensions specified";
 
     BufferedImage resultImage
         = new BufferedImage(tileRenderSize * numTilesWidth,
@@ -140,4 +160,5 @@ public class PicturePixelMatcher implements Observable {
 
     return resultImage;
   }
+
 }
