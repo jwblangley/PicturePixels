@@ -42,9 +42,8 @@ public class PicturePixelView extends JFrame {
     this.getContentPane().add(backPanel);
 
     statusLabel = new JLabel("Status Label");
-    statusLabel.setPreferredSize(new Dimension(200,100));
+    statusLabel.setPreferredSize(new Dimension(200, 100));
     backPanel.add(statusLabel, BorderLayout.PAGE_START);
-
 
     JPanel selectionPanel = new JPanel(new BorderLayout());
     backPanel.add(selectionPanel, BorderLayout.CENTER);
@@ -116,7 +115,8 @@ public class PicturePixelView extends JFrame {
     AtomicInteger inputProgressCounter = new AtomicInteger(0);
     Observer inputProgressObserver = () -> {
       // Acts as CLI view
-      System.out.println(String.format("%d/%d", inputProgressCounter.incrementAndGet(), matcher.getInputDirectory().listFiles().length));
+      System.out.println(String.format("%d/%d", inputProgressCounter.incrementAndGet(),
+          matcher.getInputDirectory().listFiles().length));
     };
     matcher.addObserver(inputProgressObserver);
 
@@ -138,7 +138,8 @@ public class PicturePixelView extends JFrame {
     AtomicInteger resultProgressCounter = new AtomicInteger(0);
     Observer resultProgressObserver = () -> {
       // Acts as CLI view
-      System.out.println(String.format("Rereading: %d/%d", resultProgressCounter.incrementAndGet(), resultList.size()));
+      System.out.println(String
+          .format("Rereading: %d/%d", resultProgressCounter.incrementAndGet(), resultList.size()));
     };
     matcher.addObserver(resultProgressObserver);
 

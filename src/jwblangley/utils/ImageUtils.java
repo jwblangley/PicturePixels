@@ -11,7 +11,7 @@ public class ImageUtils {
     int minDim = Integer.min(image.getWidth(), image.getHeight());
     switch (crop) {
       case TOP_LEFT:
-        result =  image.getSubimage(0,0, minDim, minDim);
+        result = image.getSubimage(0, 0, minDim, minDim);
         break;
 
       case CENTER:

@@ -71,7 +71,6 @@ public class PicturePixelMatcher implements Observable {
   }
 
 
-
   public List<Tile> generateTilesFromImage() {
     assert targetImage.getWidth() > tileMatchSize
         : "Input image is not large enough for specified tile layout";
@@ -85,7 +84,8 @@ public class PicturePixelMatcher implements Observable {
     for (int y = 0; y < numTilesHeight; y++) {
       for (int x = 0; x < numTilesWidth; x++) {
         BufferedImage subImage
-            = targetImage.getSubimage(x * tileMatchSize, y * tileMatchSize, tileMatchSize, tileMatchSize);
+            = targetImage
+            .getSubimage(x * tileMatchSize, y * tileMatchSize, tileMatchSize, tileMatchSize);
         Tile targetTile = Tile.ofBufferedImage(numSubtiles, subImage);
         targetTiles.add(targetTile);
       }
@@ -94,6 +94,7 @@ public class PicturePixelMatcher implements Observable {
     return targetTiles;
   }
 
+  // Will notify observers once every directory
   public List<Tile> generateTilesFromDirectory() {
     assert inputDirectory.isDirectory() : "Must be given a directory";
 
@@ -105,9 +106,10 @@ public class PicturePixelMatcher implements Observable {
     List<Tile> tiles = Arrays.stream(inputDirectory.listFiles())
         .parallel()
         .map(file -> {
+          // Progress update. N.B: before section as section can be interrupted.
+          notifyObservers();
           try {
             Tile tile = Tile.ofImageFile(numSubtiles, file);
-            notifyObservers();
             return tile;
           } catch (Exception e) {
             return Tile.nullTile();
@@ -124,6 +126,7 @@ public class PicturePixelMatcher implements Observable {
     return tiles;
   }
 
+  // Will notify observers after each tile is drawn.
   public BufferedImage collateResultFromImages(List<Tile> tiles, int tileRenderSize) {
     int numTilesWidth = targetImage.getWidth() / tileMatchSize;
     int numTilesHeight = targetImage.getHeight() / tileMatchSize;
@@ -155,6 +158,7 @@ public class PicturePixelMatcher implements Observable {
       g.drawImage(toDraw, x * tileRenderSize, y * tileRenderSize, tileRenderSize,
           tileRenderSize, null);
 
+      // Progress update
       notifyObservers();
     });
 

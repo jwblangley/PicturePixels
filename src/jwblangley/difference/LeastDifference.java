@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 public class LeastDifference {
@@ -18,15 +17,17 @@ public class LeastDifference {
    * N.B: the set can be larger than the target list.
    */
 
-
+  // TODO: better matching algorithm(s)?
 
   // Basic greedy approach heuristic.
   // Needs all positive values -> uses absolute difference
-  // Use set to remove duplicates. If duplicates are allowed, use repeatsAllowed
-  private static <T> List<T> basicNearestNeighbourMatch(List<T> unorderedInput, List<T> target, int repeatsAllowed,
+  // Use set to remove duplicates. If duplicates are allowed, use numRepeatsAllowed
+  private static <T> List<T> basicNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
+      int numRepeatsAllowed,
       DifferenceFunction<T> diffFunc) {
 
-    assert unorderedInput.size() * repeatsAllowed >= target.size() : "Not enough input to match to target";
+    assert unorderedInput.size() * numRepeatsAllowed >= target
+        .size() : "Not enough input to match to target";
 
     List<T> result = new LinkedList<>();
 
@@ -37,7 +38,7 @@ public class LeastDifference {
       long minDiff = Integer.MAX_VALUE;
       int minIndex = -1;
       for (int j = 0; j < unorderedInput.size(); j++) {
-        if (used[j] < repeatsAllowed) {
+        if (used[j] < numRepeatsAllowed) {
           long diff = diffFunc.absoluteDifference(target.get(i), unorderedInput.get(j));
           if (diff < minDiff) {
             minDiff = diff;
@@ -53,7 +54,7 @@ public class LeastDifference {
 
   // Shuffle input and repeat multiple times to yield better value
   public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput,
-      List<T> target, int repeatsAllowed, int numShuffles, DifferenceFunction<T> diffFunc) {
+      List<T> target, int numRepeatsAllowed, int numShuffles, DifferenceFunction<T> diffFunc) {
     assert numShuffles > 0 : "Cannot repeat < 0 times";
 
     long minTotal = Long.MAX_VALUE;
@@ -64,7 +65,7 @@ public class LeastDifference {
 
     for (int i = 0; i < numShuffles; i++) {
       Collections.shuffle(input);
-      List<T> result = basicNearestNeighbourMatch(input, target, repeatsAllowed, diffFunc);
+      List<T> result = basicNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc);
       long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {
         minTotal = totalDiff;
@@ -74,7 +75,8 @@ public class LeastDifference {
     return bestResult;
   }
 
-  public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput, List<T> target, DifferenceFunction<T> diffFunc) {
+  public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput, List<T> target,
+      DifferenceFunction<T> diffFunc) {
     return nearestNeighbourMatch(unorderedInput, target, 1, 1, diffFunc);
   }
 
