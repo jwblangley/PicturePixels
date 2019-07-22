@@ -2,6 +2,8 @@ package jwblangley.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +25,7 @@ public class PicturePixelView extends JFrame {
 
   private final PicturePixelMatcher matcher;
 
+  private JPanel backPanel;
   private JLabel statusLabel;
   private JFileChooser targetImageChooser;
   private JProgressBar progressBar;
@@ -34,7 +37,7 @@ public class PicturePixelView extends JFrame {
   }
 
   public void createDisplay() {
-    JPanel backPanel = new JPanel(new BorderLayout());
+    backPanel = new JPanel(new BorderLayout());
     this.getContentPane().add(backPanel);
 
     JPanel statusPanel = new JPanel(new BorderLayout());
@@ -78,9 +81,11 @@ public class PicturePixelView extends JFrame {
     selectionPanel.add(inputDirectoryButton, BorderLayout.LINE_END);
 
     JButton runButton = new JButton("Run");
-    runButton.addActionListener(actionEvent ->
-        // Run in new thread to keep main thread free for user interactions
-        new Thread(App::runPicturePixels).start());
+    runButton.addActionListener(actionEvent -> {
+      progressBar.setMaximum(matcher.maxProgress());
+      // Run in new thread to keep main thread free for user interactions
+      new Thread(App::runPicturePixels).start();
+    });
     selectionPanel.add(runButton, BorderLayout.PAGE_END);
 
     JPanel optionsPanel = new JPanel(new BorderLayout());
@@ -114,4 +119,29 @@ public class PicturePixelView extends JFrame {
     this.repaint();
   }
 
+  public void setProgress(int progress) {
+    progressBar.setValue(progress);
+  }
+
+  public void setProgress(String s) {
+    progressBar.setString(s);
+  }
+
+  public void disableInputs() {
+    setAllComponentsEnabled(backPanel, false);
+  }
+
+  public void enableInputs() {
+    setAllComponentsEnabled(backPanel, true);
+  }
+
+  private void setAllComponentsEnabled(Container rootComponent, boolean enabled) {
+    rootComponent.setEnabled(enabled);
+    for (Component component : rootComponent.getComponents()) {
+      if (component instanceof Container) {
+        setAllComponentsEnabled((Container) component, enabled);
+      }
+      component.setEnabled(enabled);
+    }
+  }
 }

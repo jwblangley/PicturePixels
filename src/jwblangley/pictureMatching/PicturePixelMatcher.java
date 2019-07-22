@@ -26,6 +26,7 @@ public class PicturePixelMatcher implements Observable {
   private int numSubtiles;
   private int tileMatchSize;
   private int numDuplicatesAllowed;
+  private int tileRenderSize;
 
   private File inputDirectory;
 
@@ -47,6 +48,10 @@ public class PicturePixelMatcher implements Observable {
 
   public void setNumDuplicatesAllowed(int numDuplicatesAllowed) {
     this.numDuplicatesAllowed = numDuplicatesAllowed;
+  }
+
+  public void setTileRenderSize(int tileRenderSize) {
+    this.tileRenderSize = tileRenderSize;
   }
 
   public File getInputDirectory() {
@@ -72,6 +77,7 @@ public class PicturePixelMatcher implements Observable {
   public void notifyObservers() {
     observers.forEach(Observer::onNotified);
   }
+
 
   public int numCurrentInputs() {
     return inputDirectory.listFiles().length * numDuplicatesAllowed;
@@ -129,6 +135,7 @@ public class PicturePixelMatcher implements Observable {
           try {
             return Tile.ofImageFile(numSubtiles, file);
           } catch (Exception e) {
+            System.out.printf("Could not read%s as image\n", file.getAbsolutePath());
             return Tile.nullTile();
           }
         })
@@ -144,7 +151,7 @@ public class PicturePixelMatcher implements Observable {
   }
 
   // Will notify observers after each tile is drawn.
-  public BufferedImage collateResultFromImages(List<Tile> tiles, int tileRenderSize) {
+  public BufferedImage collateResultFromImages(List<Tile> tiles) {
     int numTilesWidth = targetImage.getWidth() / tileMatchSize;
     int numTilesHeight = targetImage.getHeight() / tileMatchSize;
 

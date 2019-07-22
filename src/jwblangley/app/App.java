@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import jwblangley.difference.LeastDifference;
 import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
@@ -15,15 +18,17 @@ import jwblangley.view.PicturePixelView;
 
 public class App {
 
-  private static final int NUM_SUBTILES = 7;
-  private static final int SUBTIILE_MATCH_SIZE = 3;
-  private static final int TILE_MATCH_SIZE = NUM_SUBTILES * SUBTIILE_MATCH_SIZE;
+  private static final int DEFAULT_NUM_SUBTILES = 7;
+  private static final int DEFAULT_SUBTIILE_MATCH_SIZE = 3;
+  private static final int DEFAULT_TILE_MATCH_SIZE =
+      DEFAULT_NUM_SUBTILES * DEFAULT_SUBTIILE_MATCH_SIZE;
 
-  public static final int NUM_DUPLICATES_ALLOWED = 1;
+  public static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
+
   public static final int SEARCH_REPEATS = 3;
 
   // For generating the resulting image
-  public static final int TILE_RENDER_SIZE = 100;
+  public static final int DEFAULT_TILE_RENDER_SIZE = 100;
 
   private static PicturePixelMatcher matcher;
   private static PicturePixelView view;
@@ -31,9 +36,10 @@ public class App {
 
   public static void main(String[] args) {
     matcher = new PicturePixelMatcher();
-    matcher.setNumSubtiles(NUM_SUBTILES);
-    matcher.setTileMatchSize(TILE_MATCH_SIZE);
-    matcher.setNumDuplicatesAllowed(NUM_DUPLICATES_ALLOWED);
+    matcher.setNumSubtiles(DEFAULT_NUM_SUBTILES);
+    matcher.setTileMatchSize(DEFAULT_TILE_MATCH_SIZE);
+    matcher.setNumDuplicatesAllowed(DEFAULT_NUM_DUPLICATES_ALLOWED);
+    matcher.setTileRenderSize(DEFAULT_TILE_RENDER_SIZE);
 
     view = new PicturePixelView(matcher);
     view.createDisplay();
@@ -42,17 +48,15 @@ public class App {
   }
 
   public static void runPicturePixels() {
+    view.disableInputs();
+
     // Set up observer for progress
     AtomicInteger progressCounter = new AtomicInteger(0);
-    Observer progressObserver = () -> view.setStatus(
-        String.format("%d/%d: %s",
-            progressCounter.incrementAndGet(),
-            matcher.maxProgress(),
-            progressCounter.get() < matcher.getInputDirectory().listFiles().length
-                ? "Reading inputs" : "Rereading selected inputs"
-        ),
-        Color.BLACK
-    );
+    Observer progressObserver = () -> {
+      view.setProgress(progressCounter.incrementAndGet());
+      view.setStatus(progressCounter.get() < matcher.getInputDirectory().listFiles().length
+          ? "Reading inputs" : "Rereading selected inputs", Color.BLACK);
+    };
     matcher.addObserver(progressObserver);
 
     // Generate targetTiles
@@ -61,7 +65,12 @@ public class App {
     // Generate input tiles
     List<Tile> inputTiles = matcher.generateTilesFromDirectory();
 
-    // TODO: check input tiles length is still okay - bad inputs will be removed
+    // We only check against number of files previously: check now that all tiles are successful
+    if (inputTiles.size() * matcher.getNumDuplicatesAllowed() < matcher.inputsRequired()) {
+      view.setStatus("Not enough input images: some files could not be read as images", Color.RED);
+      view.enableInputs();
+      return;
+    }
 
     // Calculate match
     List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
@@ -73,14 +82,41 @@ public class App {
 
     // Generate resulting image
     BufferedImage resultImage
-        = matcher.collateResultFromImages(resultList, TILE_RENDER_SIZE);
+        = matcher.collateResultFromImages(resultList);
 
-    // Write resulting image
-    try {
-      ImageIO.write(resultImage, "png", new File("output.png"));
-      System.out.println("Written");
-    } catch (IOException e) {
-      e.printStackTrace();
+    view.setStatus("Generation complete, choose save location", Color.BLACK);
+    view.setProgress("Complete");
+
+    // Save image option
+    JFileChooser saveChooser = new JFileChooser();
+    FileFilter imageFilter = new FileNameExtensionFilter(
+        "Image files", ImageIO.getWriterFileSuffixes());
+    saveChooser.setFileFilter(imageFilter);
+
+    int saveSuccess = saveChooser.showSaveDialog(null);
+    if (saveSuccess == JFileChooser.APPROVE_OPTION) {
+      // Validate save location
+      File saveFile;
+      if (imageFilter.accept(saveChooser.getSelectedFile())) {
+        saveFile = saveChooser.getSelectedFile();
+      } else {
+        saveFile = new File("output.png");
+        view.setStatus("Cannot save that file (location/type). Saved to "
+            + saveFile.getAbsolutePath(), Color.RED);
+      }
+
+      // Write resulting image to save location
+      String fileExt = saveFile.getAbsolutePath()
+          .substring(saveFile.getAbsolutePath().lastIndexOf('.') + 1);
+      try {
+        ImageIO.write(resultImage, fileExt, saveFile);
+        view.setStatus("Image written", Color.GREEN);
+      } catch (IOException e) {
+        // TODO: handle exception
+        e.printStackTrace();
+      }
     }
+
+    view.enableInputs();
   }
 }
