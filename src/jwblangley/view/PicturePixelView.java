@@ -6,23 +6,18 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import jwblangley.app.App;
-import jwblangley.difference.LeastDifference;
-import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
-import jwblangley.pictureMatching.Tile;
 
 public class PicturePixelView extends JFrame {
 
@@ -30,6 +25,7 @@ public class PicturePixelView extends JFrame {
 
   private JLabel statusLabel;
   private JFileChooser targetImageChooser;
+  private JProgressBar progressBar;
 
   public PicturePixelView(PicturePixelMatcher matcher) {
     super("Picture by pixels");
@@ -41,10 +37,19 @@ public class PicturePixelView extends JFrame {
     JPanel backPanel = new JPanel(new BorderLayout());
     this.getContentPane().add(backPanel);
 
+    JPanel statusPanel = new JPanel(new BorderLayout());
+    backPanel.add(statusPanel, BorderLayout.PAGE_START);
+
     statusLabel = new JLabel("Status Label");
-    statusLabel.setPreferredSize(new Dimension(200, 100));
+    statusLabel.setPreferredSize(new Dimension(500, 100));
     statusLabel.setHorizontalAlignment(JLabel.CENTER);
-    backPanel.add(statusLabel, BorderLayout.PAGE_START);
+    statusPanel.add(statusLabel, BorderLayout.CENTER);
+
+    progressBar = new JProgressBar();
+    progressBar.setSize(new Dimension(500, 25));
+    progressBar.setStringPainted(true);
+    progressBar.setMinimum(0);
+    statusPanel.add(progressBar, BorderLayout.PAGE_END);
 
     JPanel selectionPanel = new JPanel(new BorderLayout());
     backPanel.add(selectionPanel, BorderLayout.CENTER);
@@ -72,15 +77,16 @@ public class PicturePixelView extends JFrame {
     });
     selectionPanel.add(inputDirectoryButton, BorderLayout.LINE_END);
 
-    JPanel optionsPanel = new JPanel(new BorderLayout());
-
-    // TODO: add option setters
-
     JButton runButton = new JButton("Run");
     runButton.addActionListener(actionEvent ->
         // Run in new thread to keep main thread free for user interactions
         new Thread(App::runPicturePixels).start());
-    backPanel.add(runButton, BorderLayout.PAGE_END);
+    selectionPanel.add(runButton, BorderLayout.PAGE_END);
+
+    JPanel optionsPanel = new JPanel(new BorderLayout());
+    backPanel.add(optionsPanel, BorderLayout.PAGE_END);
+
+    // TODO: add option setters
 
     this.pack();
   }
