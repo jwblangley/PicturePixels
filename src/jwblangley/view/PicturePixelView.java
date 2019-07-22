@@ -127,10 +127,11 @@ public class PicturePixelView extends JFrame {
     matcher.removeObserver(inputProgressObserver);
 
     // Calculate match
-    List<Tile> resultList = LeastDifference.repeatNearestNeighbourMatch(
-        App.SEARCH_REPEATS,
+    List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
         inputTiles,
         targetTiles,
+        App.REPEATS_ALLOWED,
+        App.SEARCH_REPEATS,
         Tile.differenceFunction::absoluteDifference);
 
     // Set up observer for progress
