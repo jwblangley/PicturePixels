@@ -43,6 +43,7 @@ public class PicturePixelView extends JFrame {
 
     statusLabel = new JLabel("Status Label");
     statusLabel.setPreferredSize(new Dimension(200, 100));
+    statusLabel.setHorizontalAlignment(JLabel.CENTER);
     backPanel.add(statusLabel, BorderLayout.PAGE_START);
 
     JPanel selectionPanel = new JPanel(new BorderLayout());
@@ -78,7 +79,7 @@ public class PicturePixelView extends JFrame {
     JButton runButton = new JButton("Run");
     runButton.addActionListener(actionEvent ->
         // Run in new thread to keep main thread free for user interactions
-        new Thread(this::runPicturePixels).start());
+        new Thread(App::runPicturePixels).start());
     backPanel.add(runButton, BorderLayout.PAGE_END);
 
     this.pack();
@@ -101,50 +102,10 @@ public class PicturePixelView extends JFrame {
     }
   };
 
-  private void setStatus(String status, Color statusColor) {
+  public void setStatus(String status, Color statusColor) {
     statusLabel.setForeground(statusColor);
     statusLabel.setText(status);
     this.repaint();
-  }
-
-  private void runPicturePixels() {
-    // Set up observer for progress
-    AtomicInteger progressCounter = new AtomicInteger(0);
-    Observer progressObserver = () -> System.out.println(
-        String.format("%d/%d: %s",
-            progressCounter.incrementAndGet(),
-            matcher.maxProgress(),
-            progressCounter.get() < matcher.getInputDirectory().listFiles().length ? "Reading" : "Rereading"
-        )
-    );
-    matcher.addObserver(progressObserver);
-
-    // Generate targetTiles
-    List<Tile> targetTiles = matcher.generateTilesFromImage();
-
-    // Generate input tiles
-    List<Tile> inputTiles = matcher.generateTilesFromDirectory();
-
-    // Calculate match
-    List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
-        inputTiles,
-        targetTiles,
-        matcher.getNumDuplicatesAllowed(),
-        App.SEARCH_REPEATS,
-        Tile.differenceFunction::absoluteDifference);
-
-
-    // Generate resulting image
-    BufferedImage resultImage
-        = matcher.collateResultFromImages(resultList, App.TILE_RENDER_SIZE);
-
-    // Write resulting image
-    try {
-      ImageIO.write(resultImage, "png", new File("output.png"));
-      System.out.println("Written");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
 }
