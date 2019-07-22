@@ -23,12 +23,12 @@ public class App {
   private static final int DEFAULT_TILE_MATCH_SIZE =
       DEFAULT_NUM_SUBTILES * DEFAULT_SUBTIILE_MATCH_SIZE;
 
-  public static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
+  private static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
 
-  public static final int SEARCH_REPEATS = 3;
+  private static final int SEARCH_REPEATS = 3;
 
   // For generating the resulting image
-  public static final int DEFAULT_TILE_RENDER_SIZE = 100;
+  private static final int DEFAULT_TILE_RENDER_SIZE = 100;
 
   private static PicturePixelMatcher matcher;
   private static PicturePixelView view;
