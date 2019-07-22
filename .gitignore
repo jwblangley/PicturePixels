@@ -3,5 +3,8 @@
 out/
 
 exampleImages/
+
 *.png
 *.jpg
+!test/*.png
+!test/*.jpg
