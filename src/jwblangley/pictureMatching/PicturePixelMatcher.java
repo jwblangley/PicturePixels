@@ -25,6 +25,7 @@ public class PicturePixelMatcher implements Observable {
   private BufferedImage targetImage;
   private int numSubtiles;
   private int tileMatchSize;
+  private int numDuplicatesAllowed;
 
   private File inputDirectory;
 
@@ -38,6 +39,14 @@ public class PicturePixelMatcher implements Observable {
 
   public void setTileMatchSize(int tileMatchSize) {
     this.tileMatchSize = tileMatchSize;
+  }
+
+  public int getNumDuplicatesAllowed() {
+    return numDuplicatesAllowed;
+  }
+
+  public void setNumDuplicatesAllowed(int numDuplicatesAllowed) {
+    this.numDuplicatesAllowed = numDuplicatesAllowed;
   }
 
   public File getInputDirectory() {
@@ -64,10 +73,19 @@ public class PicturePixelMatcher implements Observable {
     observers.forEach(Observer::onNotified);
   }
 
-  public int getNumRequired() {
+  public int numCurrentInputs() {
+    return inputDirectory.listFiles().length * numDuplicatesAllowed;
+  }
+
+  public int inputsRequired() {
     int numTilesWidth = targetImage.getWidth() / tileMatchSize;
     int numTilesHeight = targetImage.getHeight() / tileMatchSize;
     return numTilesWidth * numTilesHeight;
+  }
+
+  public int maxProgress() {
+    // N.B: inputs required is equal to the number of tiles used
+    return inputDirectory.listFiles().length + inputsRequired();
   }
 
 
@@ -109,8 +127,7 @@ public class PicturePixelMatcher implements Observable {
           // Progress update. N.B: before section as section can be interrupted.
           notifyObservers();
           try {
-            Tile tile = Tile.ofImageFile(numSubtiles, file);
-            return tile;
+            return Tile.ofImageFile(numSubtiles, file);
           } catch (Exception e) {
             return Tile.nullTile();
           }

@@ -19,6 +19,8 @@ public class LeastDifference {
 
   // TODO: better matching algorithm(s)?
 
+  // TODO: repeats don't appear in blocks
+
   // Basic greedy approach heuristic.
   // Needs all positive values -> uses absolute difference
   // Use set to remove duplicates. If duplicates are allowed, use numRepeatsAllowed

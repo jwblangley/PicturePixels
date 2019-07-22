@@ -108,40 +108,31 @@ public class PicturePixelView extends JFrame {
   }
 
   private void runPicturePixels() {
+    // Set up observer for progress
+    AtomicInteger progressCounter = new AtomicInteger(0);
+    Observer progressObserver = () -> System.out.println(
+        String.format("%d/%d: %s",
+            progressCounter.incrementAndGet(),
+            matcher.maxProgress(),
+            progressCounter.get() < matcher.getInputDirectory().listFiles().length ? "Reading" : "Rereading"
+        )
+    );
+    matcher.addObserver(progressObserver);
+
     // Generate targetTiles
     List<Tile> targetTiles = matcher.generateTilesFromImage();
 
-    // Set up observer for progress
-    AtomicInteger inputProgressCounter = new AtomicInteger(0);
-    Observer inputProgressObserver = () -> {
-      // Acts as CLI view
-      System.out.println(String.format("%d/%d", inputProgressCounter.incrementAndGet(),
-          matcher.getInputDirectory().listFiles().length));
-    };
-    matcher.addObserver(inputProgressObserver);
-
     // Generate input tiles
     List<Tile> inputTiles = matcher.generateTilesFromDirectory();
-
-    // Remove observer to allow reread progress
-    matcher.removeObserver(inputProgressObserver);
 
     // Calculate match
     List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
         inputTiles,
         targetTiles,
-        App.REPEATS_ALLOWED,
+        matcher.getNumDuplicatesAllowed(),
         App.SEARCH_REPEATS,
         Tile.differenceFunction::absoluteDifference);
 
-    // Set up observer for progress
-    AtomicInteger resultProgressCounter = new AtomicInteger(0);
-    Observer resultProgressObserver = () -> {
-      // Acts as CLI view
-      System.out.println(String
-          .format("Rereading: %d/%d", resultProgressCounter.incrementAndGet(), resultList.size()));
-    };
-    matcher.addObserver(resultProgressObserver);
 
     // Generate resulting image
     BufferedImage resultImage
