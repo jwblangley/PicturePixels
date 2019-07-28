@@ -24,7 +24,7 @@ public class App {
   public static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
 
   // For generating the resulting image
-  private static final int DEFAULT_TILE_RENDER_SIZE = 100;
+  public static final int DEFAULT_TILE_RENDER_SIZE = 100;
 
   private static final int SEARCH_REPEATS = 3;
 

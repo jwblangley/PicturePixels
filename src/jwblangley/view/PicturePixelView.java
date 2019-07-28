@@ -163,6 +163,23 @@ public class PicturePixelView extends JFrame {
     });
     optionsPanel.add(subtileSizeSetter);
 
+    OptionSetter tileRenderSetter = new OptionSetter("Tile render size",
+        String.valueOf(App.DEFAULT_TILE_RENDER_SIZE));
+    tileRenderSetter.addObserver(() -> {
+      try {
+        int tileRenderSize = Integer.parseInt(tileRenderSetter.getValue());
+        if (tileRenderSize < 1) {
+          setStatus("Invalid parameter: # tile render size", Color.RED);
+          return;
+        }
+        matcher.setTileRenderSize(tileRenderSize);
+        updateStatusWithNumbers();
+      } catch (NumberFormatException e) {
+        setStatus("Invalid parameter: tile render size", Color.RED);
+      }
+    });
+    optionsPanel.add(tileRenderSetter);
+
     this.pack();
   }
 
