@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -21,14 +20,13 @@ import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import jwblangley.app.App;
-import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 
 public class PicturePixelView extends JFrame {
 
   private final PicturePixelMatcher matcher;
 
-  private JPanel selectionPanel;
+  private JPanel selectionPanel, optionsPanel;
   private JLabel statusLabel;
   private JFileChooser targetImageChooser;
   private JProgressBar progressBar;
@@ -108,7 +106,7 @@ public class PicturePixelView extends JFrame {
 
     // Option setters
 
-    JPanel optionsPanel = new JPanel();
+    optionsPanel = new JPanel();
     optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
     backPanel.add(optionsPanel, BorderLayout.PAGE_END);
 
@@ -204,8 +202,9 @@ public class PicturePixelView extends JFrame {
     if (checkValidInputs()) {
       Dimension resultDim = matcher.resultDimension();
       setStatus(
-          String.format("%d/%d inputs, result image: %dx%d",
-              matcher.numCurrentInputs(), matcher.inputsRequired(), resultDim.width, resultDim.height),
+          String.format("Inputs: %d/%d, Number of tiles: %d, Result image: %dx%d",
+              matcher.numCurrentInputs(), matcher.inputsRequired(), matcher.inputsRequired(),
+              resultDim.width, resultDim.height),
           matcher.numCurrentInputs() > matcher.inputsRequired() ? Color.GREEN : Color.RED
       );
     }
@@ -227,10 +226,12 @@ public class PicturePixelView extends JFrame {
 
   public void disableInputs() {
     setAllComponentsEnabled(selectionPanel, false);
+    setAllComponentsEnabled(optionsPanel, false);
   }
 
   public void enableInputs() {
     setAllComponentsEnabled(selectionPanel, true);
+    setAllComponentsEnabled(optionsPanel, true);
   }
 
   private void setAllComponentsEnabled(Container rootComponent, boolean enabled) {
