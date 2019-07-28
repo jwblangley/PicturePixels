@@ -1,5 +1,6 @@
 package jwblangley.pictureMatching;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -100,6 +101,14 @@ public class PicturePixelMatcher implements Observable {
   public int maxProgress() {
     // N.B: inputs required is equal to the number of tiles used
     return inputDirectory.listFiles().length + inputsRequired();
+  }
+
+  public Dimension resultDimension() {
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
+    int w = numTilesWidth * tileRenderSize;
+    int h = numTilesHeight * tileRenderSize;
+    return new Dimension(w, h);
   }
 
 

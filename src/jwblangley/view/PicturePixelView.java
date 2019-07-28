@@ -149,8 +149,10 @@ public class PicturePixelView extends JFrame {
 
   private void updateStatusWithNumbers() {
     if (checkValidInputs()) {
+      Dimension resultDim = matcher.resultDimension();
       setStatus(
-          String.format("%d/%d inputs", matcher.numCurrentInputs(), matcher.inputsRequired()),
+          String.format("%d/%d inputs, result image: %dx%d",
+              matcher.numCurrentInputs(), matcher.inputsRequired(), resultDim.width, resultDim.height),
           matcher.numCurrentInputs() > matcher.inputsRequired() ? Color.GREEN : Color.RED
       );
     }
