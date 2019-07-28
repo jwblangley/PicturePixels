@@ -24,7 +24,7 @@ public class PicturePixelMatcher implements Observable {
 
   private BufferedImage targetImage;
   private int numSubtiles;
-  private int tileMatchSize;
+  private int subtileMatchSize;
   private int numDuplicatesAllowed;
   private int tileRenderSize;
 
@@ -42,8 +42,8 @@ public class PicturePixelMatcher implements Observable {
     this.numSubtiles = numSubtiles;
   }
 
-  public void setTileMatchSize(int tileMatchSize) {
-    this.tileMatchSize = tileMatchSize;
+  public void setSubtileMatchSize(int subtileMatchSize) {
+    this.subtileMatchSize = subtileMatchSize;
   }
 
   public int getNumDuplicatesAllowed() {
@@ -87,9 +87,13 @@ public class PicturePixelMatcher implements Observable {
     return inputDirectory.listFiles().length * numDuplicatesAllowed;
   }
 
+  private int tileMatchSize() {
+    return subtileMatchSize * numSubtiles;
+  }
+
   public int inputsRequired() {
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize;
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize;
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
     return numTilesWidth * numTilesHeight;
   }
 
@@ -100,20 +104,20 @@ public class PicturePixelMatcher implements Observable {
 
 
   public List<Tile> generateTilesFromImage() {
-    assert targetImage.getWidth() > tileMatchSize
+    assert targetImage.getWidth() > tileMatchSize()
         : "Input image is not large enough for specified tile layout";
-    assert targetImage.getHeight() > tileMatchSize
+    assert targetImage.getHeight() > tileMatchSize()
         : "Input image is not large enough for specified tile layout";
 
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize;
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize;
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
 
     List<Tile> targetTiles = new LinkedList<>();
     for (int y = 0; y < numTilesHeight; y++) {
       for (int x = 0; x < numTilesWidth; x++) {
         BufferedImage subImage
             = targetImage
-            .getSubimage(x * tileMatchSize, y * tileMatchSize, tileMatchSize, tileMatchSize);
+            .getSubimage(x * tileMatchSize(), y * tileMatchSize(), tileMatchSize(), tileMatchSize());
         Tile targetTile = Tile.ofBufferedImage(numSubtiles, subImage);
         targetTiles.add(targetTile);
       }
@@ -156,8 +160,8 @@ public class PicturePixelMatcher implements Observable {
 
   // Will notify observers after each tile is drawn.
   public BufferedImage collateResultFromImages(List<Tile> tiles) {
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize;
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize;
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
 
     assert tiles != null && tiles.size() == numTilesWidth * numTilesHeight
         : "Incorrect number of tiles for dimensions specified";

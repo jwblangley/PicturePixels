@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -104,13 +106,24 @@ public class PicturePixelView extends JFrame {
     });
     selectionPanel.add(runButton, BorderLayout.PAGE_END);
 
-    JPanel optionsPanel = new JPanel(new BorderLayout());
+    JPanel optionsPanel = new JPanel();
+    optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
     backPanel.add(optionsPanel, BorderLayout.PAGE_END);
 
     OptionSetter numSubtilesSetter = new OptionSetter("Number of subtiles",
         String.valueOf(App.DEFAULT_NUM_SUBTILES));
     numSubtilesSetter.addObserver(() -> {
-      System.out.println(numSubtilesSetter.getValue());
+      try {
+        int numSubtiles = Integer.parseInt(numSubtilesSetter.getValue());
+        if (numSubtiles < 1) {
+          setStatus("Invalid parameter: #subtiles", Color.RED);
+          return;
+        }
+        matcher.setNumSubtiles(numSubtiles);
+        updateStatusWithNumbers();
+      } catch (NumberFormatException e) {
+        setStatus("Invalid parameter: # subtiles", Color.RED);
+      }
     });
     optionsPanel.add(numSubtilesSetter, BorderLayout.CENTER);
 

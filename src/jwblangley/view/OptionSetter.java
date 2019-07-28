@@ -21,7 +21,7 @@ public class OptionSetter extends Container implements Observable {
     this.setLayout(new BorderLayout());
 
     JLabel titleLabel = new JLabel(title);
-    add(titleLabel, BorderLayout.PAGE_START);
+    add(titleLabel, BorderLayout.LINE_START);
 
     inputField = new JTextField(defaultValue);
     inputField.addKeyListener(new KeyAdapter() {

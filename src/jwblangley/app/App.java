@@ -19,9 +19,7 @@ import jwblangley.view.PicturePixelView;
 public class App {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
-  private static final int DEFAULT_SUBTIILE_MATCH_SIZE = 3;
-  private static final int DEFAULT_TILE_MATCH_SIZE =
-      DEFAULT_NUM_SUBTILES * DEFAULT_SUBTIILE_MATCH_SIZE;
+  private static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
 
   private static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
 
@@ -37,7 +35,7 @@ public class App {
   public static void main(String[] args) {
     matcher = new PicturePixelMatcher();
     matcher.setNumSubtiles(DEFAULT_NUM_SUBTILES);
-    matcher.setTileMatchSize(DEFAULT_TILE_MATCH_SIZE);
+    matcher.setSubtileMatchSize(DEFAULT_SUBTILE_MATCH_SIZE);
     matcher.setNumDuplicatesAllowed(DEFAULT_NUM_DUPLICATES_ALLOWED);
     matcher.setTileRenderSize(DEFAULT_TILE_RENDER_SIZE);
 
