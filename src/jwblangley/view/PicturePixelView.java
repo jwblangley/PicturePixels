@@ -88,6 +88,7 @@ public class PicturePixelView extends JFrame {
       int chooseSuccess = inputDirectoryChooser.showOpenDialog(null);
       if (chooseSuccess == JFileChooser.APPROVE_OPTION) {
         matcher.setInputDirectory(inputDirectoryChooser.getSelectedFile());
+        updateStatusWithNumbers();
       }
     });
     selectionPanel.add(inputDirectoryButton, BorderLayout.LINE_END);
@@ -119,13 +120,22 @@ public class PicturePixelView extends JFrame {
         try {
           BufferedImage targetImage = ImageIO.read(targetImageChooser.getSelectedFile());
           matcher.setTargetImage(targetImage);
+          updateStatusWithNumbers();
         } catch (IOException e) {
-          e.printStackTrace();
-          // TODO: manage exception
+          setStatus("Could not read target image", Color.RED);
         }
       }
     }
   };
+
+  private void updateStatusWithNumbers() {
+    if (checkValidInputs()) {
+      setStatus(
+          String.format("%d/%d inputs", matcher.numCurrentInputs(), matcher.inputsRequired()),
+          matcher.numCurrentInputs() > matcher.inputsRequired() ? Color.GREEN : Color.RED
+      );
+    }
+  }
 
   public void setStatus(String status, Color statusColor) {
     statusLabel.setForeground(statusColor);
