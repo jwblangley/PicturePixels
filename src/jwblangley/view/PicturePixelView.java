@@ -106,9 +106,28 @@ public class PicturePixelView extends JFrame {
     });
     selectionPanel.add(runButton, BorderLayout.PAGE_END);
 
+    // Option setters
+
     JPanel optionsPanel = new JPanel();
     optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
     backPanel.add(optionsPanel, BorderLayout.PAGE_END);
+
+    OptionSetter numDuplicatesSetter = new OptionSetter("Number of duplicates allowed",
+        String.valueOf(App.DEFAULT_NUM_DUPLICATES_ALLOWED));
+    numDuplicatesSetter.addObserver(() -> {
+      try {
+        int numDuplicates = Integer.parseInt(numDuplicatesSetter.getValue());
+        if (numDuplicates < 1) {
+          setStatus("Invalid parameter: # duplicates", Color.RED);
+          return;
+        }
+        matcher.setNumDuplicatesAllowed(numDuplicates);
+        updateStatusWithNumbers();
+      } catch (NumberFormatException e) {
+        setStatus("Invalid parameter: # duplicates", Color.RED);
+      }
+    });
+    optionsPanel.add(numDuplicatesSetter);
 
     OptionSetter numSubtilesSetter = new OptionSetter("Number of subtiles",
         String.valueOf(App.DEFAULT_NUM_SUBTILES));
@@ -116,7 +135,7 @@ public class PicturePixelView extends JFrame {
       try {
         int numSubtiles = Integer.parseInt(numSubtilesSetter.getValue());
         if (numSubtiles < 1) {
-          setStatus("Invalid parameter: #subtiles", Color.RED);
+          setStatus("Invalid parameter: # subtiles", Color.RED);
           return;
         }
         matcher.setNumSubtiles(numSubtiles);
@@ -125,7 +144,24 @@ public class PicturePixelView extends JFrame {
         setStatus("Invalid parameter: # subtiles", Color.RED);
       }
     });
-    optionsPanel.add(numSubtilesSetter, BorderLayout.CENTER);
+    optionsPanel.add(numSubtilesSetter);
+
+    OptionSetter subtileSizeSetter = new OptionSetter("Subtile match size",
+        String.valueOf(App.DEFAULT_SUBTILE_MATCH_SIZE));
+    subtileSizeSetter.addObserver(() -> {
+      try {
+        int subtileSize = Integer.parseInt(subtileSizeSetter.getValue());
+        if (subtileSize < 1) {
+          setStatus("Invalid parameter: # subtile size", Color.RED);
+          return;
+        }
+        matcher.setSubtileMatchSize(subtileSize);
+        updateStatusWithNumbers();
+      } catch (NumberFormatException e) {
+        setStatus("Invalid parameter: subtile size", Color.RED);
+      }
+    });
+    optionsPanel.add(subtileSizeSetter);
 
     this.pack();
   }

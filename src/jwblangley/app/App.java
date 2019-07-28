@@ -19,14 +19,14 @@ import jwblangley.view.PicturePixelView;
 public class App {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
-  private static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
+  public static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
 
-  private static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
-
-  private static final int SEARCH_REPEATS = 3;
+  public static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
 
   // For generating the resulting image
   private static final int DEFAULT_TILE_RENDER_SIZE = 100;
+
+  private static final int SEARCH_REPEATS = 3;
 
   private static PicturePixelMatcher matcher;
   private static PicturePixelView view;
@@ -50,6 +50,12 @@ public class App {
     assert matcher.getInputDirectory() != null;
 
     view.disableInputs();
+
+    if (matcher.numCurrentInputs() < matcher.inputsRequired()) {
+      view.setStatus("Not enough inputs with current settings", Color.RED);
+      view.enableInputs();
+      return;
+    }
 
     // Set up observer for progress
     AtomicInteger progressCounter = new AtomicInteger(0);
