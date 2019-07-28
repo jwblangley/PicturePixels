@@ -30,6 +30,10 @@ public class PicturePixelMatcher implements Observable {
 
   private File inputDirectory;
 
+  public BufferedImage getTargetImage() {
+    return targetImage;
+  }
+
   public void setTargetImage(BufferedImage targetImage) {
     this.targetImage = targetImage;
   }

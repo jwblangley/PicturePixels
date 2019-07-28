@@ -25,7 +25,7 @@ public class PicturePixelView extends JFrame {
 
   private final PicturePixelMatcher matcher;
 
-  private JPanel backPanel;
+  private JPanel selectionPanel;
   private JLabel statusLabel;
   private JFileChooser targetImageChooser;
   private JProgressBar progressBar;
@@ -36,14 +36,26 @@ public class PicturePixelView extends JFrame {
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
+  public boolean checkValidInputs() {
+    if (matcher.getTargetImage() == null || matcher.getInputDirectory() == null) {
+      if (matcher.getTargetImage() == null) {
+        setStatus("Please select a target image", Color.RED);
+      } else {
+        setStatus("Please select an input directory", Color.RED);
+      }
+      return false;
+    }
+    return true;
+  }
+
   public void createDisplay() {
-    backPanel = new JPanel(new BorderLayout());
+    JPanel backPanel = new JPanel(new BorderLayout());
     this.getContentPane().add(backPanel);
 
     JPanel statusPanel = new JPanel(new BorderLayout());
     backPanel.add(statusPanel, BorderLayout.PAGE_START);
 
-    statusLabel = new JLabel("Status Label");
+    statusLabel = new JLabel("Select a target image to begin");
     statusLabel.setPreferredSize(new Dimension(500, 100));
     statusLabel.setHorizontalAlignment(JLabel.CENTER);
     statusPanel.add(statusLabel, BorderLayout.CENTER);
@@ -54,7 +66,7 @@ public class PicturePixelView extends JFrame {
     progressBar.setMinimum(0);
     statusPanel.add(progressBar, BorderLayout.PAGE_END);
 
-    JPanel selectionPanel = new JPanel(new BorderLayout());
+    selectionPanel = new JPanel(new BorderLayout());
     backPanel.add(selectionPanel, BorderLayout.CENTER);
 
     // Target image selection
@@ -82,9 +94,11 @@ public class PicturePixelView extends JFrame {
 
     JButton runButton = new JButton("Run");
     runButton.addActionListener(actionEvent -> {
-      progressBar.setMaximum(matcher.maxProgress());
-      // Run in new thread to keep main thread free for user interactions
-      new Thread(App::runPicturePixels).start();
+      if (checkValidInputs()) {
+        progressBar.setMaximum(matcher.maxProgress());
+        // Run in new thread to keep main thread free for user interactions
+        new Thread(App::runPicturePixels).start();
+      }
     });
     selectionPanel.add(runButton, BorderLayout.PAGE_END);
 
@@ -128,11 +142,11 @@ public class PicturePixelView extends JFrame {
   }
 
   public void disableInputs() {
-    setAllComponentsEnabled(backPanel, false);
+    setAllComponentsEnabled(selectionPanel, false);
   }
 
   public void enableInputs() {
-    setAllComponentsEnabled(backPanel, true);
+    setAllComponentsEnabled(selectionPanel, true);
   }
 
   private void setAllComponentsEnabled(Container rootComponent, boolean enabled) {
