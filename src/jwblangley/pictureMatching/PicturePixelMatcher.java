@@ -145,8 +145,6 @@ public class PicturePixelMatcher implements Observable {
     int numFiles = inputDirectory.listFiles().length;
     AtomicInteger progress = new AtomicInteger(0);
 
-    HashMap<Tile, File> tileSource = new HashMap<>();
-
     List<Tile> tiles = Arrays.stream(inputDirectory.listFiles())
         .parallel()
         .map(file -> {
