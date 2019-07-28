@@ -125,8 +125,11 @@ public class PicturePixelMatcher implements Observable {
     for (int y = 0; y < numTilesHeight; y++) {
       for (int x = 0; x < numTilesWidth; x++) {
         BufferedImage subImage
-            = targetImage
-            .getSubimage(x * tileMatchSize(), y * tileMatchSize(), tileMatchSize(), tileMatchSize());
+            = targetImage.getSubimage(
+            x * tileMatchSize(),
+            y * tileMatchSize(),
+            tileMatchSize(), tileMatchSize()
+        );
         Tile targetTile = Tile.ofBufferedImage(numSubtiles, subImage);
         targetTiles.add(targetTile);
       }
