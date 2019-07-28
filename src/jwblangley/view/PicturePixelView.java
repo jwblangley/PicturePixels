@@ -19,6 +19,7 @@ import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import jwblangley.app.App;
+import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 
 public class PicturePixelView extends JFrame {
@@ -106,7 +107,12 @@ public class PicturePixelView extends JFrame {
     JPanel optionsPanel = new JPanel(new BorderLayout());
     backPanel.add(optionsPanel, BorderLayout.PAGE_END);
 
-    // TODO: add option setters
+    OptionSetter numSubtilesSetter = new OptionSetter("Number of subtiles",
+        String.valueOf(App.DEFAULT_NUM_SUBTILES));
+    numSubtilesSetter.addObserver(() -> {
+      System.out.println(numSubtilesSetter.getValue());
+    });
+    optionsPanel.add(numSubtilesSetter, BorderLayout.CENTER);
 
     this.pack();
   }

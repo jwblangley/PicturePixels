@@ -18,7 +18,7 @@ import jwblangley.view.PicturePixelView;
 
 public class App {
 
-  private static final int DEFAULT_NUM_SUBTILES = 7;
+  public static final int DEFAULT_NUM_SUBTILES = 7;
   private static final int DEFAULT_SUBTIILE_MATCH_SIZE = 3;
   private static final int DEFAULT_TILE_MATCH_SIZE =
       DEFAULT_NUM_SUBTILES * DEFAULT_SUBTIILE_MATCH_SIZE;
@@ -48,6 +48,9 @@ public class App {
   }
 
   public static void runPicturePixels() {
+    assert matcher.getTargetImage() != null;
+    assert matcher.getInputDirectory() != null;
+
     view.disableInputs();
 
     // Set up observer for progress
@@ -78,7 +81,8 @@ public class App {
         targetTiles,
         matcher.getNumDuplicatesAllowed(),
         App.SEARCH_REPEATS,
-        Tile.differenceFunction::absoluteDifference);
+        Tile.differenceFunction::absoluteDifference
+    );
 
     // Generate resulting image
     BufferedImage resultImage
