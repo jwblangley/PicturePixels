@@ -162,7 +162,7 @@ public class PicturePixelMatcher implements Observable {
     // Remove any null tiles (from non image files)
     // N.B do the check this way round to avoid having to do repeat IO
     tiles = tiles.stream()
-        .filter(Predicate.not(Tile::isNull))
+        .filter(t -> !t.isNull())
         .collect(Collectors.toList());
 
     return tiles;
