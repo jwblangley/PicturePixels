@@ -57,7 +57,7 @@ public class PicturePixelView extends JFrame {
     backPanel.add(statusPanel, BorderLayout.PAGE_START);
 
     statusLabel = new JLabel("Select a target image to begin");
-    statusLabel.setPreferredSize(new Dimension(500, 100));
+    statusLabel.setPreferredSize(new Dimension(750, 200));
     statusLabel.setHorizontalAlignment(JLabel.CENTER);
     statusPanel.add(statusLabel, BorderLayout.CENTER);
 

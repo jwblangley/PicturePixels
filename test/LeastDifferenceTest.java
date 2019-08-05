@@ -87,7 +87,18 @@ public class LeastDifferenceTest {
     List<Long> b = Arrays.asList(1L, 2L, 3L, 4L, 5L);
 
     List<Long> result = LeastDifference
-        .nearestNeighbourMatch(a, b, longDifference::absoluteDifference);
+        .nearestNeighbourMatch(a, b, 1, 1, longDifference::absoluteDifference, false);
+    assertArrayEquals(new Long[]{1L, 2L, 3L, 4L, 5L}, result.toArray());
+  }
+
+  @Test
+  public void parallelNearestNeighbourWithTargetAlreadyGivenIsCorrect() {
+    List<Long> a = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+    List<Long> b = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+
+    List<Long> result = LeastDifference
+        .nearestNeighbourMatch(a, b, 1, 1, longDifference::absoluteDifference, true);
+
     assertArrayEquals(new Long[]{1L, 2L, 3L, 4L, 5L}, result.toArray());
   }
 

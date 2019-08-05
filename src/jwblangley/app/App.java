@@ -82,12 +82,14 @@ public class App {
 
     // Calculate match
     view.setStatus("Calculating match", Color.BLACK);
+    view.repaint();
     List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
         inputTiles,
         targetTiles,
         matcher.getNumDuplicatesAllowed(),
         App.SEARCH_REPEATS,
-        Tile.differenceFunction::absoluteDifference
+        Tile.differenceFunction::absoluteDifference,
+        false
     );
 
     // Generate resulting image
