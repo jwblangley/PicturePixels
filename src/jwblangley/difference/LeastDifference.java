@@ -111,7 +111,6 @@ public class LeastDifference {
       } else {
         result = basicNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc);
       }
-      System.out.println("result = " + result);
       long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {
         minTotal = totalDiff;

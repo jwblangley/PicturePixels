@@ -89,7 +89,7 @@ public class App {
         matcher.getNumDuplicatesAllowed(),
         App.SEARCH_REPEATS,
         Tile.differenceFunction::absoluteDifference,
-        false
+        true
     );
 
     // Generate resulting image

@@ -97,6 +97,7 @@ public class PicturePixelView extends JFrame {
     JButton runButton = new JButton("Run");
     runButton.addActionListener(actionEvent -> {
       if (checkValidInputs()) {
+        progressBar.setString(null);
         progressBar.setMaximum(matcher.maxProgress());
         // Run in new thread to keep main thread free for user interactions
         new Thread(App::runPicturePixels).start();
