@@ -5,12 +5,11 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
@@ -30,6 +29,7 @@ public class PicturePixelMatcher implements Observable {
   private int tileRenderSize;
 
   private File inputDirectory;
+  private List<File> inputFiles;
 
   public BufferedImage getTargetImage() {
     return targetImage;
@@ -63,8 +63,28 @@ public class PicturePixelMatcher implements Observable {
     return inputDirectory;
   }
 
-  public void setInputDirectory(File inputDirectory) {
+  public List<File> getInputFiles() {
+    return inputFiles;
+  }
+
+  public void setInputDirectoryAndRecurseSelect(File inputDirectory) {
     this.inputDirectory = inputDirectory;
+    inputFiles = recursiveSelectAllFiles(inputDirectory);
+
+  }
+
+  private List<File> recursiveSelectAllFiles(File rootFile) {
+    assert rootFile.isDirectory();
+    List<File> files = new ArrayList<>();
+    for (File file : rootFile.listFiles()) {
+      if (file.isDirectory()) {
+        files.addAll(recursiveSelectAllFiles(file));
+      } else {
+        files.add(file);
+      }
+    }
+
+    return files;
   }
 
   // Used for progress updates
@@ -85,7 +105,7 @@ public class PicturePixelMatcher implements Observable {
 
 
   public int numCurrentInputs() {
-    return inputDirectory.listFiles().length * numDuplicatesAllowed;
+    return inputFiles.size() * numDuplicatesAllowed;
   }
 
   private int tileMatchSize() {
@@ -100,7 +120,7 @@ public class PicturePixelMatcher implements Observable {
 
   public int maxProgress() {
     // N.B: inputs required is equal to the number of tiles used
-    return inputDirectory.listFiles().length + inputsRequired();
+    return inputFiles.size() + inputsRequired();
   }
 
   public Dimension resultDimension() {
@@ -142,10 +162,7 @@ public class PicturePixelMatcher implements Observable {
   public List<Tile> generateTilesFromDirectory() {
     assert inputDirectory.isDirectory() : "Must be given a directory";
 
-    int numFiles = inputDirectory.listFiles().length;
-    AtomicInteger progress = new AtomicInteger(0);
-
-    List<Tile> tiles = Arrays.stream(inputDirectory.listFiles())
+    List<Tile> tiles = inputFiles.stream()
         .parallel()
         .map(file -> {
           // Progress update. N.B: before section as section can be interrupted.

@@ -61,7 +61,7 @@ public class App {
     AtomicInteger progressCounter = new AtomicInteger(0);
     Observer progressObserver = () -> {
       view.setProgress(progressCounter.incrementAndGet());
-      view.setStatus(progressCounter.get() < matcher.getInputDirectory().listFiles().length
+      view.setStatus(progressCounter.get() < matcher.getInputFiles().size()
           ? "Reading inputs" : "Rereading selected inputs", Color.BLACK);
     };
     matcher.addObserver(progressObserver);
@@ -70,6 +70,7 @@ public class App {
     List<Tile> targetTiles = matcher.generateTilesFromImage();
 
     // Generate input tiles
+    // Will notify observer for each file read
     List<Tile> inputTiles = matcher.generateTilesFromDirectory();
 
     // We only check against number of files previously: check now that all tiles are successful
@@ -80,6 +81,7 @@ public class App {
     }
 
     // Calculate match
+    view.setStatus("Calculating match", Color.BLACK);
     List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
         inputTiles,
         targetTiles,
@@ -89,6 +91,7 @@ public class App {
     );
 
     // Generate resulting image
+    // Will notify observer for each file reread
     BufferedImage resultImage
         = matcher.collateResultFromImages(resultList);
 

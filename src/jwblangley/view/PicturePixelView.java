@@ -88,7 +88,7 @@ public class PicturePixelView extends JFrame {
     inputDirectoryButton.addActionListener(actionEvent -> {
       int chooseSuccess = inputDirectoryChooser.showOpenDialog(null);
       if (chooseSuccess == JFileChooser.APPROVE_OPTION) {
-        matcher.setInputDirectory(inputDirectoryChooser.getSelectedFile());
+        matcher.setInputDirectoryAndRecurseSelect(inputDirectoryChooser.getSelectedFile());
         updateStatusWithNumbers();
       }
     });
