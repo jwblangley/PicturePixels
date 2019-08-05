@@ -18,7 +18,6 @@ public class LeastDifference {
    */
 
   // TODO: better matching algorithm(s)?
-
   // TODO: repeats don't appear in blocks
 
   // Basic greedy approach heuristic.

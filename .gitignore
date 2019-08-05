@@ -4,6 +4,8 @@ out/
 
 exampleImages/
 
+META-INF
+
 *.png
 *.jpg
 !test/*.png

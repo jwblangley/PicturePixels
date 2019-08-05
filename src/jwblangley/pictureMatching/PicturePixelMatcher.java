@@ -209,7 +209,8 @@ public class PicturePixelMatcher implements Observable {
       try {
         toDraw = ImageIO.read(tile.getSource());
       } catch (IOException e) {
-        //TODO: handle exception
+        e.printStackTrace();
+        return;
       }
 
       toDraw = ImageUtils.cropSquare(toDraw, CropType.CENTER);

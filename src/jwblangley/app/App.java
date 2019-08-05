@@ -123,8 +123,8 @@ public class App {
         ImageIO.write(resultImage, fileExt, saveFile);
         view.setStatus("Image written", Color.GREEN);
       } catch (IOException e) {
-        // TODO: handle exception
         e.printStackTrace();
+        view.setStatus("Could not write image", Color.RED);
       }
     }
 

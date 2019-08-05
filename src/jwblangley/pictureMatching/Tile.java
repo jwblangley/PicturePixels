@@ -25,12 +25,7 @@ public class Tile {
     this.isNull = isNull;
 
     if (!isNull) {
-      try {
         subtiles = calculateSubtiles(image);
-      } catch (IOException e) {
-        // TODO: Handle exception
-        e.printStackTrace();
-      }
     }
   }
 
@@ -62,7 +57,7 @@ public class Tile {
     return source;
   }
 
-  private Color[][] calculateSubtiles(BufferedImage image) throws IOException {
+  private Color[][] calculateSubtiles(BufferedImage image) {
 
     image = ImageUtils.cropSquare(image, CropType.CENTER);
 
