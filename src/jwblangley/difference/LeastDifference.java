@@ -25,8 +25,7 @@ public class LeastDifference {
   // Needs all positive values -> uses absolute difference
   // Use set to remove duplicates. If duplicates are allowed, use numRepeatsAllowed
   private static <T> List<T> basicNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
-      int numRepeatsAllowed,
-      DifferenceFunction<T> diffFunc) {
+      int numRepeatsAllowed, DifferenceFunction<T> diffFunc) {
 
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
@@ -56,8 +55,7 @@ public class LeastDifference {
 
   // Since IntStreamRange is not ordered, this solves the blocky nature of the algorithm.
   private static <T> List<T> parallelNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
-      int numRepeatsAllowed,
-      DifferenceFunction<T> diffFunc) {
+      int numRepeatsAllowed, DifferenceFunction<T> diffFunc) {
 
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
@@ -95,7 +93,8 @@ public class LeastDifference {
 
   // Shuffle input and repeat multiple times to yield better value
   public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput,
-      List<T> target, int numRepeatsAllowed, int numShuffles, DifferenceFunction<T> diffFunc, boolean parallel) {
+      List<T> target, int numRepeatsAllowed, int numShuffles, DifferenceFunction<T> diffFunc,
+      boolean parallel) {
     assert numShuffles > 0 : "Cannot repeat < 0 times";
 
     long minTotal = Long.MAX_VALUE;

@@ -2,6 +2,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import jwblangley.difference.DifferenceFunction;
 import jwblangley.difference.LeastDifference;
@@ -9,12 +10,12 @@ import org.junit.Test;
 
 public class LeastDifferenceTest {
 
-  final DifferenceFunction<Long> longDifference = (a, b) -> a - b;
+  private final DifferenceFunction<Long> longDifference = (a, b) -> a - b;
 
   @Test
   public void totalDifferenceOfSingleSameElementIsCorrect() {
-    List<Long> a = Arrays.asList(1L);
-    List<Long> b = Arrays.asList(1L);
+    List<Long> a = Collections.singletonList(1L);
+    List<Long> b = Collections.singletonList(1L);
 
     long diff = LeastDifference.totalDifference(a, b, longDifference);
 
@@ -23,8 +24,8 @@ public class LeastDifferenceTest {
 
   @Test
   public void totalDifferenceOfSingleElementIsCorrect() {
-    List<Long> a = Arrays.asList(1L);
-    List<Long> b = Arrays.asList(2L);
+    List<Long> a = Collections.singletonList(1L);
+    List<Long> b = Collections.singletonList(2L);
 
     long diff = LeastDifference.totalDifference(a, b, longDifference);
 
@@ -33,8 +34,8 @@ public class LeastDifferenceTest {
 
   @Test
   public void totalAbsoluteDifferenceOfSingleElementIsCorrect() {
-    List<Long> a = Arrays.asList(1L);
-    List<Long> b = Arrays.asList(2L);
+    List<Long> a = Collections.singletonList(1L);
+    List<Long> b = Collections.singletonList(2L);
 
     long diff = LeastDifference.totalDifference(a, b, longDifference::absoluteDifference);
 
@@ -43,8 +44,8 @@ public class LeastDifferenceTest {
 
   @Test
   public void totalSquareDifferenceOfSingleElementIsCorrect() {
-    List<Long> a = Arrays.asList(1L);
-    List<Long> b = Arrays.asList(3L);
+    List<Long> a = Collections.singletonList(1L);
+    List<Long> b = Collections.singletonList(3L);
 
     long diff = LeastDifference.totalDifference(a, b, longDifference::squareDifference);
 

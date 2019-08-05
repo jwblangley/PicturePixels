@@ -25,7 +25,7 @@ public class Tile {
     this.isNull = isNull;
 
     if (!isNull) {
-        subtiles = calculateSubtiles(image);
+      subtiles = calculateSubtiles(image);
     }
   }
 

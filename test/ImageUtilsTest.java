@@ -1,3 +1,7 @@
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -7,8 +11,6 @@ import javax.imageio.ImageIO;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ImageUtilsTest {
 
@@ -87,7 +89,7 @@ public class ImageUtilsTest {
     BufferedImage rgbRect = ImageIO.read(new File("test/rgbRect.png"));
     BufferedImage result = ImageUtils.cropSquare(rgbRect, CropType.TOP_LEFT);
     int[] pixels = new int[result.getWidth() * result.getHeight()];
-    result.getRGB(0,0, result.getWidth(), result.getHeight(), pixels, 0, result.getWidth());
+    result.getRGB(0, 0, result.getWidth(), result.getHeight(), pixels, 0, result.getWidth());
 
     int[] expecteds = new int[result.getWidth() * result.getHeight()];
     Arrays.fill(expecteds, Color.RED.getRGB());
@@ -100,7 +102,7 @@ public class ImageUtilsTest {
     BufferedImage rgbRect = ImageIO.read(new File("test/rgbRect.png"));
     BufferedImage result = ImageUtils.cropSquare(rgbRect, CropType.CENTER);
     int[] pixels = new int[result.getWidth() * result.getHeight()];
-    result.getRGB(0,0, result.getWidth(), result.getHeight(), pixels, 0, result.getWidth());
+    result.getRGB(0, 0, result.getWidth(), result.getHeight(), pixels, 0, result.getWidth());
 
     int[] expecteds = new int[result.getWidth() * result.getHeight()];
     Arrays.fill(expecteds, Color.GREEN.getRGB());
