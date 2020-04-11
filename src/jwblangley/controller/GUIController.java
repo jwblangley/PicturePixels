@@ -1,135 +1,111 @@
 package jwblangley.controller;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import jwblangley.difference.LeastDifference;
-import jwblangley.observer.Observer;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import jwblangley.pictureMatching.PicturePixelMatcher;
-import jwblangley.pictureMatching.Tile;
-import jwblangley.view.PicturePixelView;
+import jwblangley.view.GUIPicturePixelView;
 
-public class Controller {
+public class GUIController extends Application {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
   public static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
-
   public static final int DEFAULT_NUM_DUPLICATES_ALLOWED = 1;
-
-  // For generating the resulting image
   public static final int DEFAULT_TILE_RENDER_SIZE = 100;
 
-  private static final int SEARCH_REPEATS = 3;
+  private final PicturePixelMatcher matcher;
+  private final GUIPicturePixelView view;
 
-  private static PicturePixelMatcher matcher;
-  private static PicturePixelView view;
+  private BufferedImage targetImage;
+  private File sourceDirectory;
+  private int numDuplicatesAllowed= DEFAULT_NUM_DUPLICATES_ALLOWED;
+  private int numSubtiles = DEFAULT_NUM_SUBTILES;
+  private int subtileMatchSize =DEFAULT_SUBTILE_MATCH_SIZE;
+  private int tileRenderSize = DEFAULT_TILE_RENDER_SIZE;
 
-
-  public static void main(String[] args) {
-    matcher = new PicturePixelMatcher();
-    matcher.setNumSubtiles(DEFAULT_NUM_SUBTILES);
-    matcher.setSubtileMatchSize(DEFAULT_SUBTILE_MATCH_SIZE);
-    matcher.setNumDuplicatesAllowed(DEFAULT_NUM_DUPLICATES_ALLOWED);
-    matcher.setTileRenderSize(DEFAULT_TILE_RENDER_SIZE);
-
-    view = new PicturePixelView(matcher);
-    view.createDisplay();
-    view.setLocationRelativeTo(null);
-    view.setVisible(true);
+  public GUIController(PicturePixelMatcher matcher, GUIPicturePixelView view) {
+    this.matcher = matcher;
+    this.view = view;
   }
 
-  public static void runPicturePixels() {
-    assert matcher.getTargetImage() != null;
-    assert matcher.getInputDirectory() != null;
+  public void setTargetImage(BufferedImage targetImage) {
+    this.targetImage = targetImage;
+  }
 
-    view.disableInputs();
+  public void setSourceDirectory(File sourceDirectory) {
+    this.sourceDirectory = sourceDirectory;
+  }
 
-    if (matcher.numCurrentInputs() < matcher.inputsRequired()) {
+  public void setNumDuplicatesAllowed(int numDuplicatesAllowed) {
+    this.numDuplicatesAllowed = numDuplicatesAllowed;
+  }
+
+  public void setNumSubtiles(int numSubtiles) {
+    this.numSubtiles = numSubtiles;
+  }
+
+  public void setSubtileMatchSize(int subtileMatchSize) {
+    this.subtileMatchSize = subtileMatchSize;
+  }
+
+  public void setTileRenderSize(int tileRenderSize) {
+    this.tileRenderSize = tileRenderSize;
+  }
+
+  public Dimension resultDimension() {
+    return matcher.resultDimension(targetImage, subtileMatchSize, numSubtiles, tileRenderSize);
+  }
+
+  public int numCurrentInputs() {
+    return matcher.numCurrentInputs(sourceDirectory, numDuplicatesAllowed);
+  }
+
+  public int numInputsRequired() {
+    return matcher.numInputsRequired(targetImage, subtileMatchSize, numSubtiles);
+  }
+
+
+  @Override
+  public void start(Stage window) throws Exception {
+    Scene scene = new Scene(new GUIPicturePixelView(this).layout(window));
+
+    window.setTitle("PicturePixels");
+    window.setScene(scene);
+    window.centerOnScreen();
+    window.show();
+  }
+
+  public boolean checkValidInputs() {
+    if (targetImage == null) {
+      view.setStatus("Please select a target image", Color.RED);
+      return false;
+    }
+    if (sourceDirectory == null) {
+      view.setStatus("Please select an input directory", Color.RED);
+      return false;
+    }
+    if (numCurrentInputs() < numInputsRequired()) {
       view.setStatus("Not enough inputs with current settings", Color.RED);
-      view.enableInputs();
-      return;
+      return false;
     }
+    // TODO: check other inputs
+    return true;
+  }
 
-    // Set up observer for progress
-    AtomicInteger progressCounter = new AtomicInteger(0);
-    Observer progressObserver = () -> {
-      view.setProgress(progressCounter.incrementAndGet());
-      view.setStatus(progressCounter.get() < matcher.getInputFiles().size()
-          ? "Reading inputs" : "Rereading selected inputs", Color.BLACK);
-    };
-    matcher.addObserver(progressObserver);
-
-    // Generate targetTiles
-    List<Tile> targetTiles = matcher.generateTilesFromImage();
-
-    // Generate input tiles
-    // Will notify observer for each file read
-    List<Tile> inputTiles = matcher.generateTilesFromDirectory();
-
-    // We only check against number of files previously: check now that all tiles are successful
-    if (inputTiles.size() * matcher.getNumDuplicatesAllowed() < matcher.inputsRequired()) {
-      view.setStatus("Not enough input images: some files could not be read as images", Color.RED);
-      view.enableInputs();
-      return;
+  public void runPicturePixels() {
+    if (checkValidInputs()) {
+      matcher.createPicturePixels(
+          targetImage,
+          sourceDirectory,
+          numSubtiles,
+          subtileMatchSize,
+          numDuplicatesAllowed,
+          tileRenderSize
+      );
     }
-
-    // Calculate match
-    view.setStatus("Calculating match", Color.BLACK);
-    view.repaint();
-    List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
-        inputTiles,
-        targetTiles,
-        matcher.getNumDuplicatesAllowed(),
-        Controller.SEARCH_REPEATS,
-        Tile.differenceFunction::absoluteDifference,
-        true
-    );
-
-    // Generate resulting image
-    // Will notify observer for each file reread
-    BufferedImage resultImage
-        = matcher.collateResultFromImages(resultList);
-
-    view.setStatus("Generation complete, choose save location", Color.BLACK);
-    view.setProgress("Complete");
-
-    // Save image option
-    JFileChooser saveChooser = new JFileChooser();
-    FileFilter imageFilter = new FileNameExtensionFilter(
-        "Image files", ImageIO.getWriterFileSuffixes());
-    saveChooser.setFileFilter(imageFilter);
-
-    int saveSuccess = saveChooser.showSaveDialog(null);
-    if (saveSuccess == JFileChooser.APPROVE_OPTION) {
-      // Validate save location
-      File saveFile;
-      if (imageFilter.accept(saveChooser.getSelectedFile())) {
-        saveFile = saveChooser.getSelectedFile();
-      } else {
-        saveFile = new File("output.png");
-        view.setStatus("Cannot save that file (location/type). Saved to "
-            + saveFile.getAbsolutePath(), Color.RED);
-      }
-
-      // Write resulting image to save location
-      String fileExt = saveFile.getAbsolutePath()
-          .substring(saveFile.getAbsolutePath().lastIndexOf('.') + 1);
-      try {
-        ImageIO.write(resultImage, fileExt, saveFile);
-        view.setStatus("Image written", Color.GREEN);
-      } catch (IOException e) {
-        e.printStackTrace();
-        view.setStatus("Could not write image", Color.RED);
-      }
-    }
-
-    view.enableInputs();
   }
 }

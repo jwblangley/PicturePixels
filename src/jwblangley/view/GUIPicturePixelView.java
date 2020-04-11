@@ -93,7 +93,7 @@ public class GUIPicturePixelView {
       // TODO: progressBar.setString(null);
       // TODO: progressBar.setMaximum(matcher.maxProgress());
       // Run in new thread to keep main thread free for user interactions
-       new Thread(GUIController::runPicturePixels).start();
+       new Thread(controller::runPicturePixels).start();
     });
     selectionPane.setBottom(runButton);
 

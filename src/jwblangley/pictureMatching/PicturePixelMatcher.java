@@ -11,143 +11,82 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
-import jwblangley.observer.Observable;
-import jwblangley.observer.Observer;
+import jwblangley.difference.LeastDifference;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
-public class PicturePixelMatcher implements Observable {
+public class PicturePixelMatcher {
 
-  List<Observer> observers = new LinkedList<>();
+  private static final int SEARCH_REPEATS = 3;
 
-  private BufferedImage targetImage;
-  private int numSubtiles;
-  private int subtileMatchSize;
-  private int numDuplicatesAllowed;
-  private int tileRenderSize;
+  private File lastSetRootFile;
+  private List<File> cachedInputFiles;
 
-  private File inputDirectory;
-  private List<File> inputFiles;
-
-  public BufferedImage getTargetImage() {
-    return targetImage;
-  }
-
-  public void setTargetImage(BufferedImage targetImage) {
-    this.targetImage = targetImage;
-  }
-
-  public void setNumSubtiles(int numSubtiles) {
-    this.numSubtiles = numSubtiles;
-  }
-
-  public void setSubtileMatchSize(int subtileMatchSize) {
-    this.subtileMatchSize = subtileMatchSize;
-  }
-
-  public int getNumDuplicatesAllowed() {
-    return numDuplicatesAllowed;
-  }
-
-  public void setNumDuplicatesAllowed(int numDuplicatesAllowed) {
-    this.numDuplicatesAllowed = numDuplicatesAllowed;
-  }
-
-  public void setTileRenderSize(int tileRenderSize) {
-    this.tileRenderSize = tileRenderSize;
-  }
-
-  public File getInputDirectory() {
-    return inputDirectory;
-  }
-
-  public List<File> getInputFiles() {
-    return inputFiles;
-  }
-
-  public void setInputDirectoryAndRecurseSelect(File inputDirectory) {
-    this.inputDirectory = inputDirectory;
-    inputFiles = recursiveSelectAllFiles(inputDirectory);
-
-  }
-
-  private List<File> recursiveSelectAllFiles(File rootFile) {
+  private List<File> recursiveListFiles(File rootFile) {
     assert rootFile.isDirectory();
+
+    // Return cached result if possible
+    if (rootFile.equals(lastSetRootFile)) {
+      return cachedInputFiles;
+    }
+    lastSetRootFile = rootFile;
+
     List<File> files = new ArrayList<>();
     for (File file : rootFile.listFiles()) {
       if (file.isDirectory()) {
-        files.addAll(recursiveSelectAllFiles(file));
+        files.addAll(recursiveListFiles(file));
       } else {
         files.add(file);
       }
     }
 
+    cachedInputFiles = files;
     return files;
   }
 
-  // Used for progress updates
-  @Override
-  public void addObserver(Observer observer) {
-    observers.add(observer);
+  public int numCurrentInputs(File sourceDirectory, int numDuplicatesAllowed) {
+    return recursiveListFiles(sourceDirectory).size() * numDuplicatesAllowed;
   }
 
-  @Override
-  public void removeObserver(Observer observer) {
-    observers.remove(observer);
-  }
-
-  @Override
-  public void notifyObservers() {
-    observers.forEach(Observer::onNotified);
-  }
-
-
-  public int numCurrentInputs() {
-    return inputFiles.size() * numDuplicatesAllowed;
-  }
-
-  private int tileMatchSize() {
+  private int tileMatchSize(int subtileMatchSize, int numSubtiles) {
     // Size that each image (from set of files) represents in the output image
     return subtileMatchSize * numSubtiles;
   }
 
-  public int inputsRequired() {
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
+  public int numInputsRequired(BufferedImage targetImage, int subtileMatchSize, int numSubtiles) {
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize(subtileMatchSize, numSubtiles);
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize(subtileMatchSize, numSubtiles);
     return numTilesWidth * numTilesHeight;
   }
 
-  public int maxProgress() {
-    // N.B: inputs required is equal to the number of tiles used
-    return inputFiles.size() + inputsRequired();
-  }
-
-  public Dimension resultDimension() {
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
+  public Dimension resultDimension(BufferedImage targetImage, int subtileMatchSize, int numSubtiles, int tileRenderSize) {
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize(subtileMatchSize, numSubtiles);
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize(subtileMatchSize, numSubtiles);
     int w = numTilesWidth * tileRenderSize;
     int h = numTilesHeight * tileRenderSize;
     return new Dimension(w, h);
   }
 
+  public List<Tile> generateTilesFromImage(BufferedImage targetImage, int subtileMatchSize, int numSubtiles) {
 
-  public List<Tile> generateTilesFromImage() {
-    assert targetImage.getWidth() > tileMatchSize()
+    final int tileMatchSize = tileMatchSize(subtileMatchSize, numSubtiles);
+
+    assert targetImage.getWidth() > tileMatchSize
         : "Input image is not large enough for specified tile layout";
-    assert targetImage.getHeight() > tileMatchSize()
+    assert targetImage.getHeight() > tileMatchSize
         : "Input image is not large enough for specified tile layout";
 
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize;
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize;
 
     List<Tile> targetTiles = new LinkedList<>();
     for (int y = 0; y < numTilesHeight; y++) {
       for (int x = 0; x < numTilesWidth; x++) {
         BufferedImage subImage
             = targetImage.getSubimage(
-            x * tileMatchSize(),
-            y * tileMatchSize(),
-            tileMatchSize(), tileMatchSize()
+            x * tileMatchSize,
+            y * tileMatchSize,
+            tileMatchSize, tileMatchSize
         );
         Tile targetTile = Tile.ofBufferedImage(numSubtiles, subImage);
         targetTiles.add(targetTile);
@@ -158,14 +97,14 @@ public class PicturePixelMatcher implements Observable {
   }
 
   // Will notify observers once every directory
-  public List<Tile> generateTilesFromDirectory() {
+  public List<Tile> generateTilesFromDirectory(File inputDirectory, int numSubtiles) {
     assert inputDirectory.isDirectory() : "Must be given a directory";
+
+    List<File> inputFiles = recursiveListFiles(inputDirectory);
 
     List<Tile> tiles = inputFiles.stream()
         .parallel()
         .map(file -> {
-          // Progress update. N.B: before section as section can be interrupted.
-          notifyObservers();
           try {
             return Tile.ofImageFile(numSubtiles, file);
           } catch (Exception e) {
@@ -184,10 +123,9 @@ public class PicturePixelMatcher implements Observable {
     return tiles;
   }
 
-  // Will notify observers after each tile is drawn.
-  public BufferedImage collateResultFromImages(List<Tile> tiles) {
-    int numTilesWidth = targetImage.getWidth() / tileMatchSize();
-    int numTilesHeight = targetImage.getHeight() / tileMatchSize();
+  public BufferedImage collateResultFromImages(List<Tile> tiles, BufferedImage targetImage, int subtileMatchSize, int numSubtiles, int tileRenderSize) {
+    int numTilesWidth = targetImage.getWidth() / tileMatchSize(subtileMatchSize, numSubtiles);
+    int numTilesHeight = targetImage.getHeight() / tileMatchSize(subtileMatchSize, numSubtiles);
 
     assert tiles != null && tiles.size() == numTilesWidth * numTilesHeight
         : "Incorrect number of tiles for dimensions specified";
@@ -216,10 +154,54 @@ public class PicturePixelMatcher implements Observable {
 
       g.drawImage(toDraw, x * tileRenderSize, y * tileRenderSize, tileRenderSize,
           tileRenderSize, null);
-
-      // Progress update
-      notifyObservers();
     });
+
+    return resultImage;
+  }
+
+  public BufferedImage createPicturePixels(
+      BufferedImage targetImage,
+      File sourceDirectory,
+      int numSubtiles,
+      int subtileMatchSize,
+      int numDuplicatesAllowed,
+      int tileRenderSize) {
+
+    assert targetImage != null;
+    assert sourceDirectory != null;
+    assert subtileMatchSize > 0;
+    assert numSubtiles > 0;
+    assert tileRenderSize > 0;
+
+    assert numDuplicatesAllowed > 0;
+
+    // Generate targetTiles
+    List<Tile> targetTiles = generateTilesFromImage(targetImage, subtileMatchSize, numSubtiles);
+
+    // Generate input tiles
+    List<Tile> inputTiles = generateTilesFromDirectory(sourceDirectory, numSubtiles);
+
+    // We only check against number of files previously: check now that all tiles are successful
+    if (inputTiles.size() * numDuplicatesAllowed < numInputsRequired(targetImage, subtileMatchSize, numSubtiles)) {
+        // TODO
+//      view.setStatus("Not enough input images: some files could not be read as images", Color.RED);
+//      view.enableInputs();
+//      return;
+    }
+
+    // Calculate match
+    List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
+        inputTiles,
+        targetTiles,
+        numDuplicatesAllowed,
+        SEARCH_REPEATS,
+        Tile.differenceFunction::absoluteDifference,
+        true
+    );
+
+    // Generate resulting image
+    BufferedImage resultImage
+        = collateResultFromImages(resultList, targetImage, subtileMatchSize, numSubtiles, tileRenderSize);
 
     return resultImage;
   }
