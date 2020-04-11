@@ -132,8 +132,8 @@ public class GUIController {
         e.printStackTrace();
         view.setStatus("Could not write image", Color.RED);
       }
-
-      view.enableInputs();
     }
+
+    view.enableInputs();
   }
 }
