@@ -20,18 +20,18 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import jwblangley.controller.GUIController;
 
-public class GUIPicturePixelView {
+public class GUIView {
 
   private Label statusLabel;
   private ProgressBar progressBar;
 
-  private final GUIController controller;
+  private GUIController controller;
 
   public static String[] IMAGE_EXTENSIONS = Arrays.stream(ImageIO.getReaderFileSuffixes())
       .map(s -> "*." + s)
       .toArray(String[]::new);
 
-  public GUIPicturePixelView(GUIController controller) {
+  public void setController(GUIController controller) {
     this.controller = controller;
   }
 

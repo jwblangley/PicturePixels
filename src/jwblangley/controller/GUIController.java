@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jwblangley.pictureMatching.PicturePixelMatcher;
-import jwblangley.view.GUIPicturePixelView;
+import jwblangley.view.GUIView;
 
 public class GUIController extends Application {
 
@@ -18,7 +18,7 @@ public class GUIController extends Application {
   public static final int DEFAULT_TILE_RENDER_SIZE = 100;
 
   private final PicturePixelMatcher matcher;
-  private final GUIPicturePixelView view;
+  private final GUIView view;
 
   private BufferedImage targetImage;
   private File sourceDirectory;
@@ -27,9 +27,10 @@ public class GUIController extends Application {
   private int subtileMatchSize =DEFAULT_SUBTILE_MATCH_SIZE;
   private int tileRenderSize = DEFAULT_TILE_RENDER_SIZE;
 
-  public GUIController(PicturePixelMatcher matcher, GUIPicturePixelView view) {
+  public GUIController(PicturePixelMatcher matcher, GUIView view) {
     this.matcher = matcher;
     this.view = view;
+    view.setController(this);
   }
 
   public void setTargetImage(BufferedImage targetImage) {
@@ -71,7 +72,7 @@ public class GUIController extends Application {
 
   @Override
   public void start(Stage window) throws Exception {
-    Scene scene = new Scene(new GUIPicturePixelView(this).layout(window));
+    Scene scene = new Scene(view.layout(window));
 
     window.setTitle("PicturePixels");
     window.setScene(scene);
