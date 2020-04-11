@@ -8,6 +8,7 @@ import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -29,7 +30,11 @@ public class GUIView {
   private Label statusLabel;
   private ProgressBar progressBar;
 
+  private Pane optionsPane;
+  private BorderPane selectionPane;
+
   private GUIController controller;
+
 
   public void setController(GUIController controller) {
     this.controller = controller;
@@ -50,7 +55,7 @@ public class GUIView {
     progressBar.prefWidthProperty().bind(statusPane.widthProperty());
     statusPane.setBottom(progressBar);
 
-    BorderPane selectionPane = new BorderPane();
+    selectionPane = new BorderPane();
     backPane.setCenter(selectionPane);
 
 
@@ -103,7 +108,7 @@ public class GUIView {
     selectionPane.setCenter(runButton);
 
     // Option setters
-    VBox optionsPane = new VBox(5);
+    optionsPane = new VBox(5);
     backPane.setBottom(optionsPane);
 
     GUIOptionSetter numDuplicatesSetter = new GUIOptionSetter("Number of duplicates allowed",
@@ -206,10 +211,16 @@ public class GUIView {
   }
 
   public void disableInputs() {
-    // TODO
+    setNodesEnabled(false, selectionPane, optionsPane);
   }
 
   public void enableInputs() {
-    // TODO
+    setNodesEnabled(true, selectionPane, optionsPane);
+  }
+
+  public void setNodesEnabled(boolean enabled, Node... nodes) {
+    for(Node node : nodes) {
+      node.setDisable(!enabled);
+    }
   }
 }
