@@ -3,14 +3,13 @@ package jwblangley.controller;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javafx.application.Application;
-import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 import jwblangley.view.GUIView;
 
-public class GUIController extends Application {
+public class GUIController {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
   public static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
@@ -31,6 +30,10 @@ public class GUIController extends Application {
     this.matcher = matcher;
     this.view = view;
     view.setController(this);
+  }
+
+  public Pane getLayout(Stage window) {
+    return this.view.layout(window);
   }
 
   public void setTargetImage(BufferedImage targetImage) {
@@ -67,17 +70,6 @@ public class GUIController extends Application {
 
   public int numInputsRequired() {
     return matcher.numInputsRequired(targetImage, subtileMatchSize, numSubtiles);
-  }
-
-
-  @Override
-  public void start(Stage window) throws Exception {
-    Scene scene = new Scene(view.layout(window));
-
-    window.setTitle("PicturePixels");
-    window.setScene(scene);
-    window.centerOnScreen();
-    window.show();
   }
 
   public boolean checkValidInputs() {

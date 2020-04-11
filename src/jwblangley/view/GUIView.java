@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -37,6 +40,7 @@ public class GUIView {
 
   public Pane layout(Stage window) {
     BorderPane backPane = new BorderPane();
+    backPane.setPadding(new Insets(5));
 
     BorderPane statusPane = new BorderPane();
     backPane.setTop(statusPane);
@@ -46,10 +50,12 @@ public class GUIView {
     statusPane.setCenter(statusLabel);
 
     progressBar = new ProgressBar();
+    progressBar.prefWidthProperty().bind(statusPane.widthProperty());
     statusPane.setBottom(progressBar);
 
     BorderPane selectionPane = new BorderPane();
     backPane.setCenter(selectionPane);
+
 
     // Target image selection
     Button targetButton = new Button("Choose target image");
@@ -72,6 +78,7 @@ public class GUIView {
         }
       }
     });
+    BorderPane.setAlignment(targetButton, Pos.CENTER);
     selectionPane.setLeft(targetButton);
 
 
@@ -86,6 +93,7 @@ public class GUIView {
         updateStatusWithNumbers();
       }
     });
+    BorderPane.setAlignment(inputDirectoryButton, Pos.CENTER);
     selectionPane.setRight(inputDirectoryButton);
 
     Button runButton = new Button("Run");
@@ -95,7 +103,7 @@ public class GUIView {
       // Run in new thread to keep main thread free for user interactions
        new Thread(controller::runPicturePixels).start();
     });
-    selectionPane.setBottom(runButton);
+    selectionPane.setCenter(runButton);
 
     // Option setters
     VBox optionsPane = new VBox(5);
@@ -184,8 +192,10 @@ public class GUIView {
   }
 
   public void setStatus(String status, Color statusColor) {
-    statusLabel.setTextFill(statusColor);
-    statusLabel.setText(status);
+    Platform.runLater(() -> {
+      statusLabel.setTextFill(statusColor);
+      statusLabel.setText(status);
+    });
   }
 
   public void disableInputs() {

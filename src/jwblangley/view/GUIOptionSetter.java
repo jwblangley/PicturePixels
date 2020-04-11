@@ -4,6 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import jwblangley.observer.Observable;
 
 public class GUIOptionSetter extends Observable {
@@ -13,9 +14,13 @@ public class GUIOptionSetter extends Observable {
 
   public GUIOptionSetter(String title, String defaultValue) {
     layout = new HBox(5);
+    HBox.setHgrow(layout, Priority.ALWAYS);
 
     Label titleLabel = new Label(title);
+    HBox.setHgrow(titleLabel, Priority.ALWAYS);
+
     inputField = new TextField(defaultValue);
+    HBox.setHgrow(inputField, Priority.ALWAYS);
     inputField.setOnKeyReleased(e -> notifyObservers());
 
     layout.getChildren().addAll(titleLabel, inputField);
