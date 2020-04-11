@@ -79,7 +79,7 @@ public class Tile {
     return subtiles;
   }
 
-  private Color averageColor(int[] colors) {
+  private static Color averageColor(int[] colors) {
     int totalRed = 0;
     int totalGreen = 0;
     int totalBlue = 0;

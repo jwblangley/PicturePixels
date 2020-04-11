@@ -1,10 +1,21 @@
 package jwblangley.observer;
 
-public interface Observable {
+import java.util.ArrayList;
+import java.util.List;
 
-  void addObserver(Observer observer);
+public abstract class Observable {
 
-  void removeObserver(Observer observer);
+  List<Observer> observers = new ArrayList<>();
 
-  void notifyObservers();
+  public void addObserver(Observer observer) {
+    observers.add(observer);
+  }
+
+  public void removeObserver(Observer observer) {
+    observers.remove(observer);
+  }
+
+  public void notifyObservers() {
+    observers.forEach(Observer::onNotified);
+  }
 }
