@@ -107,6 +107,7 @@ public class PicturePixelMatcher implements Observable {
   }
 
   private int tileMatchSize() {
+    // Size that each image (from set of files) represents in the output image
     return subtileMatchSize * numSubtiles;
   }
 

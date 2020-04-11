@@ -1,4 +1,4 @@
-package jwblangley.app;
+package jwblangley.controller;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -16,7 +16,7 @@ import jwblangley.pictureMatching.PicturePixelMatcher;
 import jwblangley.pictureMatching.Tile;
 import jwblangley.view.PicturePixelView;
 
-public class App {
+public class Controller {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
   public static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
@@ -87,7 +87,7 @@ public class App {
         inputTiles,
         targetTiles,
         matcher.getNumDuplicatesAllowed(),
-        App.SEARCH_REPEATS,
+        Controller.SEARCH_REPEATS,
         Tile.differenceFunction::absoluteDifference,
         true
     );

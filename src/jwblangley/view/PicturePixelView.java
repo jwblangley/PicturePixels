@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import jwblangley.app.App;
+import jwblangley.controller.Controller;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 
 public class PicturePixelView extends JFrame {
@@ -100,7 +100,7 @@ public class PicturePixelView extends JFrame {
         progressBar.setString(null);
         progressBar.setMaximum(matcher.maxProgress());
         // Run in new thread to keep main thread free for user interactions
-        new Thread(App::runPicturePixels).start();
+        new Thread(Controller::runPicturePixels).start();
       }
     });
     selectionPanel.add(runButton, BorderLayout.PAGE_END);
@@ -112,7 +112,7 @@ public class PicturePixelView extends JFrame {
     backPanel.add(optionsPanel, BorderLayout.PAGE_END);
 
     OptionSetter numDuplicatesSetter = new OptionSetter("Number of duplicates allowed",
-        String.valueOf(App.DEFAULT_NUM_DUPLICATES_ALLOWED));
+        String.valueOf(Controller.DEFAULT_NUM_DUPLICATES_ALLOWED));
     numDuplicatesSetter.addObserver(() -> {
       try {
         int numDuplicates = Integer.parseInt(numDuplicatesSetter.getValue());
@@ -129,7 +129,7 @@ public class PicturePixelView extends JFrame {
     optionsPanel.add(numDuplicatesSetter);
 
     OptionSetter numSubtilesSetter = new OptionSetter("Number of subtiles",
-        String.valueOf(App.DEFAULT_NUM_SUBTILES));
+        String.valueOf(Controller.DEFAULT_NUM_SUBTILES));
     numSubtilesSetter.addObserver(() -> {
       try {
         int numSubtiles = Integer.parseInt(numSubtilesSetter.getValue());
@@ -146,7 +146,7 @@ public class PicturePixelView extends JFrame {
     optionsPanel.add(numSubtilesSetter);
 
     OptionSetter subtileSizeSetter = new OptionSetter("Subtile match size",
-        String.valueOf(App.DEFAULT_SUBTILE_MATCH_SIZE));
+        String.valueOf(Controller.DEFAULT_SUBTILE_MATCH_SIZE));
     subtileSizeSetter.addObserver(() -> {
       try {
         int subtileSize = Integer.parseInt(subtileSizeSetter.getValue());
@@ -163,7 +163,7 @@ public class PicturePixelView extends JFrame {
     optionsPanel.add(subtileSizeSetter);
 
     OptionSetter tileRenderSetter = new OptionSetter("Tile render size",
-        String.valueOf(App.DEFAULT_TILE_RENDER_SIZE));
+        String.valueOf(Controller.DEFAULT_TILE_RENDER_SIZE));
     tileRenderSetter.addObserver(() -> {
       try {
         int tileRenderSize = Integer.parseInt(tileRenderSetter.getValue());
