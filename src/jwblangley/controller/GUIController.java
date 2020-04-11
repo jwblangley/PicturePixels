@@ -3,9 +3,12 @@ package jwblangley.controller;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 import jwblangley.view.GUIView;
 
@@ -34,6 +37,14 @@ public class GUIController {
 
   public Pane getLayout(Stage window) {
     return this.view.layout(window);
+  }
+
+  public BufferedImage getTargetImage() {
+    return targetImage;
+  }
+
+  public File getSourceDirectory() {
+    return sourceDirectory;
   }
 
   public void setTargetImage(BufferedImage targetImage) {
@@ -89,9 +100,11 @@ public class GUIController {
     return true;
   }
 
-  public void runPicturePixels() {
+  public void runPicturePixels(Stage window) {
+    view.disableInputs();
+
     if (checkValidInputs()) {
-      matcher.createPicturePixels(
+      BufferedImage resultImage = matcher.createPicturePixels(
           targetImage,
           sourceDirectory,
           numSubtiles,
@@ -99,6 +112,28 @@ public class GUIController {
           numDuplicatesAllowed,
           tileRenderSize
       );
+
+      view.setStatus("Generation complete, choose save location", Color.BLACK);
+
+      FileChooser fc = new FileChooser();
+
+      File saveFile;
+      do {
+        saveFile = fc.showSaveDialog(window);
+      } while (saveFile != null);
+
+      // Write resulting image to save location
+      String fileExt = saveFile.getAbsolutePath()
+          .substring(saveFile.getAbsolutePath().lastIndexOf('.') + 1);
+      try {
+        ImageIO.write(resultImage, fileExt, saveFile);
+        view.setStatus("Image written", Color.GREEN);
+      } catch (IOException e) {
+        e.printStackTrace();
+        view.setStatus("Could not write image", Color.RED);
+      }
+
+      view.enableInputs();
     }
   }
 }

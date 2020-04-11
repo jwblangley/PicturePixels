@@ -22,6 +22,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import jwblangley.controller.GUIController;
+import jwblangley.pictureMatching.PicturePixelMatcher;
 
 public class GUIView {
 
@@ -29,10 +30,6 @@ public class GUIView {
   private ProgressBar progressBar;
 
   private GUIController controller;
-
-  public static String[] IMAGE_EXTENSIONS = Arrays.stream(ImageIO.getReaderFileSuffixes())
-      .map(s -> "*." + s)
-      .toArray(String[]::new);
 
   public void setController(GUIController controller) {
     this.controller = controller;
@@ -63,7 +60,7 @@ public class GUIView {
       // Set up FileChooser
       FileChooser targetImageChooser = new FileChooser();
       targetImageChooser.setTitle("Choose target image");
-      ExtensionFilter imageFilter = new ExtensionFilter("Image files", IMAGE_EXTENSIONS);
+      ExtensionFilter imageFilter = new ExtensionFilter("Image files", PicturePixelMatcher.IMAGE_READ_EXTENSIONS);
       targetImageChooser.getExtensionFilters().add(imageFilter);
 
       // Choose file
@@ -101,7 +98,7 @@ public class GUIView {
       // TODO: progressBar.setString(null);
       // TODO: progressBar.setMaximum(matcher.maxProgress());
       // Run in new thread to keep main thread free for user interactions
-       new Thread(controller::runPicturePixels).start();
+       new Thread(() -> controller.runPicturePixels(window)).start();
     });
     selectionPane.setCenter(runButton);
 
@@ -181,6 +178,16 @@ public class GUIView {
   }
 
   private void updateStatusWithNumbers() {
+    if (controller.getTargetImage() == null) {
+      setStatus("Please select a target image first", Color.RED);
+      return;
+    }
+
+    if (controller.getSourceDirectory() == null) {
+      setStatus("Please select an input directory", Color.RED);
+      return;
+    }
+
     Dimension resultDim = controller.resultDimension();
     setStatus(String.format("Inputs/Tiles: %d/%d, Result image: %dx%d",
         controller.numCurrentInputs(),

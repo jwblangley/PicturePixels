@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,14 @@ import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
 public class PicturePixelMatcher {
+
+  public static String[] IMAGE_READ_EXTENSIONS = Arrays.stream(ImageIO.getReaderFileSuffixes())
+      .map(s -> "*." + s)
+      .toArray(String[]::new);
+
+  public static String[] IMAGE_WRITE_EXTENSIONS = Arrays.stream(ImageIO.getWriterFileSuffixes())
+      .map(s -> "*." + s)
+      .toArray(String[]::new);
 
   private static final int SEARCH_REPEATS = 3;
 
