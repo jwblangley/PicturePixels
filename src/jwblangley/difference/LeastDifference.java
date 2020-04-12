@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.stream.IntStream;
+import jwblangley.observer.ObservableProgress;
 
-public class LeastDifference {
+public class LeastDifference extends ObservableProgress {
 
   /*
    * Problem: Permute a set to match against an ordered list yielding the minimal total difference.
@@ -24,8 +25,12 @@ public class LeastDifference {
   // Basic greedy approach heuristic.
   // Needs all positive values -> uses absolute difference
   // Use set to remove duplicates. If duplicates are allowed, use numRepeatsAllowed
-  private static <T> List<T> basicNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
-      int numRepeatsAllowed, DifferenceFunction<T> diffFunc) {
+  private static <T> List<T> basicNearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      DifferenceFunction<T> diffFunc,
+      ObservableProgress progress) {
 
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
@@ -49,13 +54,18 @@ public class LeastDifference {
       }
       result.add(unorderedInput.get(minIndex));
       used[minIndex]++;
+      progress.incrementProgress();
     }
     return result;
   }
 
   // Since IntStreamRange is not ordered, this solves the blocky nature of the algorithm.
-  private static <T> List<T> parallelNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
-      int numRepeatsAllowed, DifferenceFunction<T> diffFunc) {
+  private static <T> List<T> parallelNearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      DifferenceFunction<T> diffFunc,
+      ObservableProgress progress) {
 
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
@@ -79,6 +89,7 @@ public class LeastDifference {
           }
           atomicResult.set(i, unorderedInput.get(minIndex));
           used.incrementAndGet(minIndex);
+          progress.incrementProgress();
         });
 
     // Linked list as entirely insertion
@@ -92,10 +103,22 @@ public class LeastDifference {
   }
 
   // Shuffle input and repeat multiple times to yield better value
-  public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput,
-      List<T> target, int numRepeatsAllowed, int numShuffles, DifferenceFunction<T> diffFunc,
-      boolean parallel) {
+  public static <T> List<T> nearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      int numShuffles,
+      DifferenceFunction<T> diffFunc,
+      boolean parallel,
+      ObservableProgress observableProgress) {
+
     assert numShuffles > 0 : "Cannot repeat < 0 times";
+
+    // Set up progress updates
+    if (observableProgress != null) {
+      observableProgress.resetProgress();
+      observableProgress.setMaxProgress(target.size() * numShuffles);
+    }
 
     long minTotal = Long.MAX_VALUE;
     List<T> bestResult = null;
@@ -107,9 +130,21 @@ public class LeastDifference {
       Collections.shuffle(input);
       List<T> result;
       if (parallel) {
-        result = parallelNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc);
+        result = parallelNearestNeighbourMatch(
+            input,
+            target,
+            numRepeatsAllowed,
+            diffFunc,
+            observableProgress
+        );
       } else {
-        result = basicNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc);
+        result = basicNearestNeighbourMatch(
+            input,
+            target,
+            numRepeatsAllowed,
+            diffFunc,
+            observableProgress
+        );
       }
       long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {
@@ -118,6 +153,24 @@ public class LeastDifference {
       }
     }
     return bestResult;
+  }
+
+  public static <T> List<T> nearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      int numShuffles,
+      DifferenceFunction<T> diffFunc,
+      boolean parallel) {
+
+    return nearestNeighbourMatch(
+        unorderedInput,
+        target,
+        numRepeatsAllowed,
+        numShuffles,
+        diffFunc,
+        parallel,
+        null);
   }
 
   // Measures fitness
