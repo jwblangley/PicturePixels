@@ -4,8 +4,10 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
@@ -121,10 +123,32 @@ public class GUIController implements Controller, Observer {
 
       FileChooser fc = new FileChooser();
 
-      File saveFile;
-      do {
-        saveFile = fc.showSaveDialog(window);
-      } while (saveFile != null);
+      // Get save file location using JavaFX thread FileChooser
+      AtomicReference<File> saveFileRef = new AtomicReference<>();
+
+      // Order JavaFX thread to run FileChooser
+      Semaphore semaphore = new Semaphore(0);
+      Platform.runLater(() -> {
+        saveFileRef.set(fc.showSaveDialog(window));
+        // Release semaphore once complete
+        semaphore.release();
+      });
+
+      // Wait for semaphore release
+      try {
+        semaphore.acquire();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+        reportStatus("An error occurred");
+        view.enableInputs();
+        return;
+      }
+
+      File saveFile = saveFileRef.get();
+      if (saveFile == null) {
+        // Operation was cancelled
+        return;
+      }
 
       // Write resulting image to save location
       String fileExt = saveFile.getAbsolutePath()
