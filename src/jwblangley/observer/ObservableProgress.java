@@ -33,7 +33,7 @@ public abstract class ObservableProgress extends Observable {
     return ((double) progress.get()) / ((double) maxProgress);
   }
 
-  private void incrementProgress() {
+  public void incrementProgress() {
     progress.incrementAndGet();
     notifyObservers();
   }
