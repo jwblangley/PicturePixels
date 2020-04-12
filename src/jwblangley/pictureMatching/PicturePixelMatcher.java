@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import jwblangley.difference.LeastDifference;
 import jwblangley.observer.ObservableProgress;
+import jwblangley.observer.Observer;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
@@ -206,7 +207,8 @@ public class PicturePixelMatcher extends ObservableProgress {
         numDuplicatesAllowed,
         SEARCH_REPEATS,
         Tile.differenceFunction::absoluteDifference,
-        true
+        true,
+        () -> notifyObservers()
     );
 
     // Generate resulting image

@@ -103,14 +103,14 @@ public class LeastDifference extends ObservableProgress {
       int numShuffles,
       DifferenceFunction<T> diffFunc,
       boolean parallel,
-      Observer progressObserver) {
+      ObservableProgress progress) {
 
     assert numShuffles > 0 : "Cannot repeat < 0 times";
 
     // Set up progress
-    ObservableProgress progress = new ObservableProgress(target.size() * numShuffles){};
-    if (progressObserver != null) {
-      progress.addObserver(progressObserver);
+    if (progress != null) {
+      progress.setMaxProgress(target.size() * numShuffles);
+      progress.resetProgress();
     }
 
     long minTotal = Long.MAX_VALUE;
