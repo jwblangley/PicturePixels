@@ -102,7 +102,6 @@ public class GUIController implements Controller, Observer {
       reportStatus("Not enough inputs with current settings");
       return false;
     }
-    // TODO: check other inputs
     return true;
   }
 
@@ -110,14 +109,21 @@ public class GUIController implements Controller, Observer {
     view.disableInputs();
 
     if (checkValidInputs()) {
-      BufferedImage resultImage = matcher.createPicturePixels(
-          targetImage,
-          sourceDirectory,
-          numSubtiles,
-          subtileMatchSize,
-          numDuplicatesAllowed,
-          tileRenderSize
-      );
+      BufferedImage resultImage = null;
+      try {
+        resultImage = matcher.createPicturePixels(
+            targetImage,
+            sourceDirectory,
+            numSubtiles,
+            subtileMatchSize,
+            numDuplicatesAllowed,
+            tileRenderSize
+        );
+      } catch (IllegalStateException e) {
+        e.printStackTrace();
+        view.enableInputs();
+        return;
+      }
 
       reportStatus("Generation complete, choose save location");
 
