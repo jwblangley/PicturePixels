@@ -102,6 +102,7 @@ public class GUIController implements Controller, Observer {
       reportStatus("Not enough inputs with current settings");
       return false;
     }
+    // TODO: Check all inputs - move to controller interface
     return true;
   }
 

@@ -103,6 +103,7 @@ public class GUIView {
     selectionPane.setCenter(runButton);
 
     // Option setters
+    // TODO: tidy option setters
     optionsPane = new VBox(5);
     backPane.setBottom(optionsPane);
 
