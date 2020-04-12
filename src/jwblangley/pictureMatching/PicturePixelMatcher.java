@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
+import jwblangley.controller.Controller;
 import jwblangley.difference.LeastDifference;
 import jwblangley.observer.ObservableProgress;
 import jwblangley.observer.Observer;
@@ -29,6 +30,12 @@ public class PicturePixelMatcher extends ObservableProgress {
       .toArray(String[]::new);
 
   private static final int SEARCH_REPEATS = 3;
+
+  private Controller controller;
+
+  public void setController(Controller controller) {
+    this.controller = controller;
+  }
 
   private File lastSetRootFile;
   private List<File> cachedInputFiles;
@@ -90,6 +97,10 @@ public class PicturePixelMatcher extends ObservableProgress {
     int numTilesWidth = targetImage.getWidth() / tileMatchSize;
     int numTilesHeight = targetImage.getHeight() / tileMatchSize;
 
+    // Progress updates
+    resetProgress();
+    setMaxProgress(numTilesWidth * numTilesHeight);
+
     List<Tile> targetTiles = new LinkedList<>();
     for (int y = 0; y < numTilesHeight; y++) {
       for (int x = 0; x < numTilesWidth; x++) {
@@ -101,6 +112,7 @@ public class PicturePixelMatcher extends ObservableProgress {
         );
         Tile targetTile = Tile.ofBufferedImage(numSubtiles, subImage);
         targetTiles.add(targetTile);
+        incrementProgress();
       }
     }
 
@@ -113,13 +125,19 @@ public class PicturePixelMatcher extends ObservableProgress {
 
     List<File> inputFiles = recursiveListFiles(inputDirectory);
 
+    // Progress updates
+    resetProgress();
+    setMaxProgress(inputFiles.size());
+
     List<Tile> tiles = inputFiles.stream()
         .parallel()
         .map(file -> {
           try {
+            incrementProgress();
             return Tile.ofImageFile(numSubtiles, file);
           } catch (Exception e) {
-            System.out.printf("Could not read%s as image\n", file.getAbsolutePath());
+            System.out.printf("Could not read %s as image\n", file.getAbsolutePath());
+            incrementProgress();
             return Tile.nullTile();
           }
         })
@@ -127,6 +145,7 @@ public class PicturePixelMatcher extends ObservableProgress {
 
     // Remove any null tiles (from non image files)
     // N.B do the check this way round to avoid having to do repeat IO
+    // TODO: see if this can be merged to the above
     tiles = tiles.stream()
         .filter(t -> !t.isNull())
         .collect(Collectors.toList());
@@ -140,6 +159,10 @@ public class PicturePixelMatcher extends ObservableProgress {
 
     assert tiles != null && tiles.size() == numTilesWidth * numTilesHeight
         : "Incorrect number of tiles for dimensions specified";
+
+    // Progress updates
+    resetProgress();
+    setMaxProgress(tiles.size());
 
     BufferedImage resultImage
         = new BufferedImage(tileRenderSize * numTilesWidth,
@@ -156,7 +179,9 @@ public class PicturePixelMatcher extends ObservableProgress {
       BufferedImage toDraw = null;
       try {
         toDraw = ImageIO.read(tile.getSource());
+        incrementProgress();
       } catch (IOException e) {
+        controller.reportStatus("An error occurred");
         e.printStackTrace();
         return;
       }
@@ -176,7 +201,7 @@ public class PicturePixelMatcher extends ObservableProgress {
       int numSubtiles,
       int subtileMatchSize,
       int numDuplicatesAllowed,
-      int tileRenderSize) {
+      int tileRenderSize) throws IllegalStateException {
 
     assert targetImage != null;
     assert sourceDirectory != null;
@@ -186,21 +211,25 @@ public class PicturePixelMatcher extends ObservableProgress {
     assert tileRenderSize > 0;
 
     // Generate targetTiles
+    controller.reportStatus("Generating tiles from image");
     List<Tile> targetTiles = generateTilesFromImage(targetImage, subtileMatchSize, numSubtiles);
 
     // Generate input tiles
+    controller.reportStatus("Generate tiles from source directory");
     List<Tile> inputTiles = generateTilesFromDirectory(sourceDirectory, numSubtiles);
     assert inputTiles.stream().noneMatch(Tile::isNull);
 
-    // We only check against number of files previously: check now that all tiles are successful
+    // We only check against number of files regardless of if they are valid images
     if (inputTiles.size() * numDuplicatesAllowed < numInputsRequired(targetImage, subtileMatchSize, numSubtiles)) {
-        // TODO
-//      view.setStatus("Not enough input images: some files could not be read as images", Color.RED);
-//      view.enableInputs();
-//      return;
+      controller.reportStatus("Not enough input images: some files could not be read as images");
+      throw new IllegalStateException(
+          "Some files could not be read as images and as a result, "
+              + "there are not enough images to complete the process"
+      );
     }
 
     // Calculate match
+    controller.reportStatus("Calculating match");
     List<Tile> resultList = LeastDifference.nearestNeighbourMatch(
         inputTiles,
         targetTiles,
@@ -208,10 +237,11 @@ public class PicturePixelMatcher extends ObservableProgress {
         SEARCH_REPEATS,
         Tile.differenceFunction::absoluteDifference,
         true,
-        () -> notifyObservers()
+        this
     );
 
     // Generate resulting image
+    controller.reportStatus("Compositing result image");
     BufferedImage resultImage
         = collateResultFromImages(resultList, targetImage, subtileMatchSize, numSubtiles, tileRenderSize);
 

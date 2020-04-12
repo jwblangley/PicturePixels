@@ -13,7 +13,7 @@ import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 import jwblangley.view.GUIView;
 
-public class GUIController implements Observer {
+public class GUIController implements Controller, Observer {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
   public static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
@@ -35,6 +35,7 @@ public class GUIController implements Observer {
     this.view = view;
 
     view.setController(this);
+    matcher.setController(this);
     matcher.addObserver(this);
   }
 
@@ -88,15 +89,15 @@ public class GUIController implements Observer {
 
   public boolean checkValidInputs() {
     if (targetImage == null) {
-      view.setStatus("Please select a target image", Color.RED);
+      reportStatus("Please select a target image");
       return false;
     }
     if (sourceDirectory == null) {
-      view.setStatus("Please select an input directory", Color.RED);
+      reportStatus("Please select an input directory");
       return false;
     }
     if (numCurrentInputs() < numInputsRequired()) {
-      view.setStatus("Not enough inputs with current settings", Color.RED);
+      reportStatus("Not enough inputs with current settings");
       return false;
     }
     // TODO: check other inputs
@@ -107,8 +108,6 @@ public class GUIController implements Observer {
     view.disableInputs();
 
     if (checkValidInputs()) {
-      view.setStatus("Working...", Color.BLACK);
-
       BufferedImage resultImage = matcher.createPicturePixels(
           targetImage,
           sourceDirectory,
@@ -118,7 +117,7 @@ public class GUIController implements Observer {
           tileRenderSize
       );
 
-      view.setStatus("Generation complete, choose save location", Color.BLACK);
+      reportStatus("Generation complete, choose save location");
 
       FileChooser fc = new FileChooser();
 
@@ -132,10 +131,10 @@ public class GUIController implements Observer {
           .substring(saveFile.getAbsolutePath().lastIndexOf('.') + 1);
       try {
         ImageIO.write(resultImage, fileExt, saveFile);
-        view.setStatus("Image written", Color.GREEN);
+        reportStatus("Image written");
       } catch (IOException e) {
         e.printStackTrace();
-        view.setStatus("Could not write image", Color.RED);
+        reportStatus("Could not write image");
       }
     }
 
@@ -147,4 +146,9 @@ public class GUIController implements Observer {
   public void onNotified() {
     view.setProgress(matcher.getProgress());
   }
+
+  public void reportStatus(String status) {
+    view.setStatus(status);
+  }
 }
+

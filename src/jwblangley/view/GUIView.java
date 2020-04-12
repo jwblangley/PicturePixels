@@ -76,7 +76,7 @@ public class GUIView {
           controller.setTargetImage(targetImage);
           updateStatusWithNumbers();
         } catch (IOException ex) {
-          setStatus("Could not read target image", Color.RED);
+          setStatus("Could not read target image");
         }
       }
     });
@@ -115,13 +115,13 @@ public class GUIView {
       try {
         int numDuplicates = Integer.parseInt(numDuplicatesSetter.getValue());
         if (numDuplicates < 1) {
-          setStatus("Invalid parameter: # duplicates", Color.RED);
+          setStatus("Invalid parameter: # duplicates");
           return;
         }
         controller.setNumDuplicatesAllowed(numDuplicates);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
-        setStatus("Invalid parameter: # duplicates", Color.RED);
+        setStatus("Invalid parameter: # duplicates");
       }
     });
     optionsPane.getChildren().add(numDuplicatesSetter.getLayout());
@@ -132,13 +132,13 @@ public class GUIView {
       try {
         int numSubtiles = Integer.parseInt(numSubtilesSetter.getValue());
         if (numSubtiles < 1) {
-          setStatus("Invalid parameter: # subtiles", Color.RED);
+          setStatus("Invalid parameter: # subtiles");
           return;
         }
         controller.setNumSubtiles(numSubtiles);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
-        setStatus("Invalid parameter: # subtiles", Color.RED);
+        setStatus("Invalid parameter: # subtiles");
       }
     });
     optionsPane.getChildren().add(numSubtilesSetter.getLayout());
@@ -149,13 +149,13 @@ public class GUIView {
       try {
         int subtileSize = Integer.parseInt(subtileSizeSetter.getValue());
         if (subtileSize < 1) {
-          setStatus("Invalid parameter: # subtile size", Color.RED);
+          setStatus("Invalid parameter: # subtile size");
           return;
         }
         controller.setSubtileMatchSize(subtileSize);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
-        setStatus("Invalid parameter: subtile size", Color.RED);
+        setStatus("Invalid parameter: subtile size");
       }
     });
     optionsPane.getChildren().add(subtileSizeSetter.getLayout());
@@ -166,13 +166,13 @@ public class GUIView {
       try {
         int tileRenderSize = Integer.parseInt(tileRenderSetter.getValue());
         if (tileRenderSize < 1) {
-          setStatus("Invalid parameter: # tile render size", Color.RED);
+          setStatus("Invalid parameter: # tile render size");
           return;
         }
         controller.setTileRenderSize(tileRenderSize);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
-        setStatus("Invalid parameter: tile render size", Color.RED);
+        setStatus("Invalid parameter: tile render size");
       }
     });
     optionsPane.getChildren().add(tileRenderSetter.getLayout());
@@ -182,12 +182,12 @@ public class GUIView {
 
   private void updateStatusWithNumbers() {
     if (controller.getTargetImage() == null) {
-      setStatus("Please select a target image first", Color.RED);
+      setStatus("Please select a target image first");
       return;
     }
 
     if (controller.getSourceDirectory() == null) {
-      setStatus("Please select an input directory", Color.RED);
+      setStatus("Please select an input directory");
       return;
     }
 
@@ -196,14 +196,12 @@ public class GUIView {
         controller.numCurrentInputs(),
         controller.numInputsRequired(),
         resultDim.width,
-        resultDim.height),
-      controller.numCurrentInputs() > controller.numInputsRequired() ? Color.GREEN : Color.RED
+        resultDim.height)
     );
   }
 
-  public void setStatus(String status, Color statusColor) {
+  public void setStatus(String status) {
     Platform.runLater(() -> {
-      statusLabel.setTextFill(statusColor);
       statusLabel.setText(status);
     });
   }
@@ -223,6 +221,6 @@ public class GUIView {
   }
 
   public void setProgress(double fraction) {
-    progressBar.setProgress(fraction);
+    Platform.runLater(() ->progressBar.setProgress(fraction));
   }
 }

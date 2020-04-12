@@ -103,14 +103,14 @@ public class LeastDifference extends ObservableProgress {
       int numShuffles,
       DifferenceFunction<T> diffFunc,
       boolean parallel,
-      ObservableProgress progress) {
+      ObservableProgress observableProgress) {
 
     assert numShuffles > 0 : "Cannot repeat < 0 times";
 
-    // Set up progress
-    if (progress != null) {
-      progress.setMaxProgress(target.size() * numShuffles);
-      progress.resetProgress();
+    // Set up progress updates
+    if (observableProgress != null) {
+      observableProgress.resetProgress();
+      observableProgress.setMaxProgress(target.size() * numShuffles);
     }
 
     long minTotal = Long.MAX_VALUE;
@@ -123,9 +123,9 @@ public class LeastDifference extends ObservableProgress {
       Collections.shuffle(input);
       List<T> result;
       if (parallel) {
-        result = parallelNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc, progress);
+        result = parallelNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc, observableProgress);
       } else {
-        result = basicNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc, progress);
+        result = basicNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc, observableProgress);
       }
       long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {
