@@ -13,10 +13,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import jwblangley.difference.LeastDifference;
+import jwblangley.observer.ObservableProgress;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
-public class PicturePixelMatcher {
+public class PicturePixelMatcher extends ObservableProgress {
 
   public static String[] IMAGE_READ_EXTENSIONS = Arrays.stream(ImageIO.getReaderFileSuffixes())
       .map(s -> "*." + s)
@@ -180,15 +181,15 @@ public class PicturePixelMatcher {
     assert sourceDirectory != null;
     assert subtileMatchSize > 0;
     assert numSubtiles > 0;
-    assert tileRenderSize > 0;
-
     assert numDuplicatesAllowed > 0;
+    assert tileRenderSize > 0;
 
     // Generate targetTiles
     List<Tile> targetTiles = generateTilesFromImage(targetImage, subtileMatchSize, numSubtiles);
 
     // Generate input tiles
     List<Tile> inputTiles = generateTilesFromDirectory(sourceDirectory, numSubtiles);
+    assert inputTiles.stream().noneMatch(Tile::isNull);
 
     // We only check against number of files previously: check now that all tiles are successful
     if (inputTiles.size() * numDuplicatesAllowed < numInputsRequired(targetImage, subtileMatchSize, numSubtiles)) {

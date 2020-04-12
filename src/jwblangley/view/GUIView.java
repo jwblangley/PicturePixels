@@ -100,8 +100,6 @@ public class GUIView {
 
     Button runButton = new Button("Run");
     runButton.setOnAction(e -> {
-      // TODO: progressBar.setString(null);
-      // TODO: progressBar.setMaximum(matcher.maxProgress());
       // Run in new thread to keep main thread free for user interactions
        new Thread(() -> controller.runPicturePixels(window)).start();
     });
@@ -222,5 +220,9 @@ public class GUIView {
     for(Node node : nodes) {
       node.setDisable(!enabled);
     }
+  }
+
+  public void setProgress(double fraction) {
+    progressBar.setProgress(fraction);
   }
 }

@@ -92,9 +92,14 @@ public class LeastDifference {
   }
 
   // Shuffle input and repeat multiple times to yield better value
-  public static <T> List<T> nearestNeighbourMatch(List<T> unorderedInput,
-      List<T> target, int numRepeatsAllowed, int numShuffles, DifferenceFunction<T> diffFunc,
+  public static <T> List<T> nearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      int numShuffles,
+      DifferenceFunction<T> diffFunc,
       boolean parallel) {
+
     assert numShuffles > 0 : "Cannot repeat < 0 times";
 
     long minTotal = Long.MAX_VALUE;

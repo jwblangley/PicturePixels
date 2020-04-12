@@ -9,10 +9,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
+import jwblangley.observer.Observer;
 import jwblangley.pictureMatching.PicturePixelMatcher;
 import jwblangley.view.GUIView;
 
-public class GUIController {
+public class GUIController implements Observer {
 
   public static final int DEFAULT_NUM_SUBTILES = 7;
   public static final int DEFAULT_SUBTILE_MATCH_SIZE = 3;
@@ -32,7 +33,9 @@ public class GUIController {
   public GUIController(PicturePixelMatcher matcher, GUIView view) {
     this.matcher = matcher;
     this.view = view;
+
     view.setController(this);
+    matcher.addObserver(this);
   }
 
   public Pane getLayout(Stage window) {
@@ -104,6 +107,8 @@ public class GUIController {
     view.disableInputs();
 
     if (checkValidInputs()) {
+      view.setStatus("Working...", Color.BLACK);
+
       BufferedImage resultImage = matcher.createPicturePixels(
           targetImage,
           sourceDirectory,
@@ -135,5 +140,11 @@ public class GUIController {
     }
 
     view.enableInputs();
+  }
+
+  // Runs on progress update
+  @Override
+  public void onNotified() {
+    view.setProgress(matcher.getProgress());
   }
 }
