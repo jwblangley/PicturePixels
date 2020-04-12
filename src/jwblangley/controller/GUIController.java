@@ -27,9 +27,9 @@ public class GUIController implements Controller, Observer {
 
   private BufferedImage targetImage;
   private File sourceDirectory;
-  private int numDuplicatesAllowed= DEFAULT_NUM_DUPLICATES_ALLOWED;
+  private int numDuplicatesAllowed = DEFAULT_NUM_DUPLICATES_ALLOWED;
   private int numSubtiles = DEFAULT_NUM_SUBTILES;
-  private int subtileMatchSize =DEFAULT_SUBTILE_MATCH_SIZE;
+  private int subtileMatchSize = DEFAULT_SUBTILE_MATCH_SIZE;
   private int tileRenderSize = DEFAULT_TILE_RENDER_SIZE;
 
   public GUIController(PicturePixelMatcher matcher, GUIView view) {

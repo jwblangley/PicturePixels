@@ -15,7 +15,6 @@ import javax.imageio.ImageIO;
 import jwblangley.controller.Controller;
 import jwblangley.difference.LeastDifference;
 import jwblangley.observer.ObservableProgress;
-import jwblangley.observer.Observer;
 import jwblangley.utils.CropType;
 import jwblangley.utils.ImageUtils;
 
@@ -77,7 +76,12 @@ public class PicturePixelMatcher extends ObservableProgress {
     return numTilesWidth * numTilesHeight;
   }
 
-  public Dimension resultDimension(BufferedImage targetImage, int subtileMatchSize, int numSubtiles, int tileRenderSize) {
+  public Dimension resultDimension(
+      BufferedImage targetImage,
+      int subtileMatchSize,
+      int numSubtiles,
+      int tileRenderSize) {
+
     int numTilesWidth = targetImage.getWidth() / tileMatchSize(subtileMatchSize, numSubtiles);
     int numTilesHeight = targetImage.getHeight() / tileMatchSize(subtileMatchSize, numSubtiles);
     int w = numTilesWidth * tileRenderSize;
@@ -85,7 +89,10 @@ public class PicturePixelMatcher extends ObservableProgress {
     return new Dimension(w, h);
   }
 
-  public List<Tile> generateTilesFromImage(BufferedImage targetImage, int subtileMatchSize, int numSubtiles) {
+  public List<Tile> generateTilesFromImage(
+      BufferedImage targetImage,
+      int subtileMatchSize,
+      int numSubtiles) {
 
     final int tileMatchSize = tileMatchSize(subtileMatchSize, numSubtiles);
 
@@ -147,7 +154,13 @@ public class PicturePixelMatcher extends ObservableProgress {
     return tiles;
   }
 
-  public BufferedImage collateResultFromImages(List<Tile> tiles, BufferedImage targetImage, int subtileMatchSize, int numSubtiles, int tileRenderSize) {
+  public BufferedImage collateResultFromImages(
+      List<Tile> tiles,
+      BufferedImage targetImage,
+      int subtileMatchSize,
+      int numSubtiles,
+      int tileRenderSize) {
+
     int numTilesWidth = targetImage.getWidth() / tileMatchSize(subtileMatchSize, numSubtiles);
     int numTilesHeight = targetImage.getHeight() / tileMatchSize(subtileMatchSize, numSubtiles);
 
@@ -177,7 +190,6 @@ public class PicturePixelMatcher extends ObservableProgress {
       } catch (IOException e) {
         controller.reportStatus("An error occurred");
         e.printStackTrace();
-        return;
       }
 
       toDraw = ImageUtils.cropSquare(toDraw, CropType.CENTER);
@@ -214,7 +226,8 @@ public class PicturePixelMatcher extends ObservableProgress {
     assert inputTiles.stream().noneMatch(Tile::isNull);
 
     // We only check against number of files regardless of if they are valid images
-    if (inputTiles.size() * numDuplicatesAllowed < numInputsRequired(targetImage, subtileMatchSize, numSubtiles)) {
+    if (inputTiles.size() * numDuplicatesAllowed
+        < numInputsRequired(targetImage, subtileMatchSize, numSubtiles)) {
       controller.reportStatus("Not enough input images: some files could not be read as images");
       throw new IllegalStateException(
           "Some files could not be read as images and as a result, "
@@ -236,10 +249,10 @@ public class PicturePixelMatcher extends ObservableProgress {
 
     // Generate resulting image
     controller.reportStatus("Compositing result image");
-    BufferedImage resultImage
-        = collateResultFromImages(resultList, targetImage, subtileMatchSize, numSubtiles, tileRenderSize);
 
-    return resultImage;
+    return collateResultFromImages(
+      resultList, targetImage, subtileMatchSize, numSubtiles,tileRenderSize
+    );
   }
 
 }

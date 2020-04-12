@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.stream.IntStream;
 import jwblangley.observer.ObservableProgress;
-import jwblangley.observer.Observer;
 
 public class LeastDifference extends ObservableProgress {
 
@@ -26,8 +25,12 @@ public class LeastDifference extends ObservableProgress {
   // Basic greedy approach heuristic.
   // Needs all positive values -> uses absolute difference
   // Use set to remove duplicates. If duplicates are allowed, use numRepeatsAllowed
-  private static <T> List<T> basicNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
-      int numRepeatsAllowed, DifferenceFunction<T> diffFunc, ObservableProgress progress) {
+  private static <T> List<T> basicNearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      DifferenceFunction<T> diffFunc,
+      ObservableProgress progress) {
 
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
@@ -57,8 +60,12 @@ public class LeastDifference extends ObservableProgress {
   }
 
   // Since IntStreamRange is not ordered, this solves the blocky nature of the algorithm.
-  private static <T> List<T> parallelNearestNeighbourMatch(List<T> unorderedInput, List<T> target,
-      int numRepeatsAllowed, DifferenceFunction<T> diffFunc, ObservableProgress progress) {
+  private static <T> List<T> parallelNearestNeighbourMatch(
+      List<T> unorderedInput,
+      List<T> target,
+      int numRepeatsAllowed,
+      DifferenceFunction<T> diffFunc,
+      ObservableProgress progress) {
 
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
@@ -123,9 +130,21 @@ public class LeastDifference extends ObservableProgress {
       Collections.shuffle(input);
       List<T> result;
       if (parallel) {
-        result = parallelNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc, observableProgress);
+        result = parallelNearestNeighbourMatch(
+            input,
+            target,
+            numRepeatsAllowed,
+            diffFunc,
+            observableProgress
+        );
       } else {
-        result = basicNearestNeighbourMatch(input, target, numRepeatsAllowed, diffFunc, observableProgress);
+        result = basicNearestNeighbourMatch(
+            input,
+            target,
+            numRepeatsAllowed,
+            diffFunc,
+            observableProgress
+        );
       }
       long totalDiff = totalDifference(result, target, diffFunc);
       if (totalDiff < minTotal) {

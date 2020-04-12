@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,7 +14,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -58,14 +56,14 @@ public class GUIView {
     selectionPane = new BorderPane();
     backPane.setCenter(selectionPane);
 
-
     // Target image selection
     Button targetButton = new Button("Choose target image");
     targetButton.setOnAction(e -> {
       // Set up FileChooser
       FileChooser targetImageChooser = new FileChooser();
       targetImageChooser.setTitle("Choose target image");
-      ExtensionFilter imageFilter = new ExtensionFilter("Image files", PicturePixelMatcher.IMAGE_READ_EXTENSIONS);
+      ExtensionFilter imageFilter = new ExtensionFilter("Image files",
+          PicturePixelMatcher.IMAGE_READ_EXTENSIONS);
       targetImageChooser.getExtensionFilters().add(imageFilter);
 
       // Choose file
@@ -82,7 +80,6 @@ public class GUIView {
     });
     BorderPane.setAlignment(targetButton, Pos.CENTER);
     selectionPane.setLeft(targetButton);
-
 
     // Input directory selection
     Button inputDirectoryButton = new Button("Choose input directory");
@@ -101,7 +98,7 @@ public class GUIView {
     Button runButton = new Button("Run");
     runButton.setOnAction(e -> {
       // Run in new thread to keep main thread free for user interactions
-       new Thread(() -> controller.runPicturePixels(window)).start();
+      new Thread(() -> controller.runPicturePixels(window)).start();
     });
     selectionPane.setCenter(runButton);
 
@@ -215,12 +212,12 @@ public class GUIView {
   }
 
   public void setNodesEnabled(boolean enabled, Node... nodes) {
-    for(Node node : nodes) {
+    for (Node node : nodes) {
       node.setDisable(!enabled);
     }
   }
 
   public void setProgress(double fraction) {
-    Platform.runLater(() ->progressBar.setProgress(fraction));
+    Platform.runLater(() -> progressBar.setProgress(fraction));
   }
 }

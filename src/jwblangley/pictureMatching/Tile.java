@@ -17,7 +17,7 @@ public class Tile {
 
   private final boolean isNull;
 
-  private File source;
+  private final File source;
 
   private Tile(int numSubtiles, BufferedImage image, File source, boolean isNull) {
     this.numSubtiles = numSubtiles;
