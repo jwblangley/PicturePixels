@@ -141,12 +141,6 @@ public class PicturePixelMatcher extends ObservableProgress {
             return Tile.nullTile();
           }
         })
-        .collect(Collectors.toList());
-
-    // Remove any null tiles (from non image files)
-    // N.B do the check this way round to avoid having to do repeat IO
-    // TODO: see if this can be merged to the above
-    tiles = tiles.stream()
         .filter(t -> !t.isNull())
         .collect(Collectors.toList());
 
