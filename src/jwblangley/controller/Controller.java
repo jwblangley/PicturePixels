@@ -29,8 +29,21 @@ public interface Controller {
       reportStatus("Invalid input directory");
       return false;
     }
-
-    // TODO: Check remaining inputs
+    if (numDuplicates < 1) {
+      reportStatus("Invalid number of duplicates");
+      return false;
+    }
+    if (numSubtiles < 1) {
+      reportStatus("Invalid number of subtiles");
+      return false;
+    }
+    if (subtileMatchSize < 1) {
+      reportStatus("Invalid subtile match size");
+    }
+    if (tileRenderSize < 1) {
+      reportStatus("Invalid tile render size");
+      return false;
+    }
 
     // Check there are enough inputs
     if (numCurrentInputs(sourceDirectory, numDuplicates)
