@@ -16,12 +16,26 @@ public class CLIViewController implements Controller, Observer {
 
   public CLIViewController(PicturePixelMatcher matcher) {
     this.matcher = matcher;
+
+    matcher.setController(this);
+    matcher.addObserver(this);
   }
 
   @Override
   public void reportStatus(String status) {
     System.out.println(status);
   }
+
+  @Override
+  public int numCurrentInputs(File sourceDirectory, int numDuplicates) {
+    return matcher.numCurrentInputs(sourceDirectory, numDuplicates);
+  }
+
+  @Override
+  public int numInputsRequired(BufferedImage targetImage, int subtileMatchSize, int numSubtiles) {
+    return matcher.numInputsRequired(targetImage, subtileMatchSize, numSubtiles);
+  }
+
 
   private void printProgress(double progress) {
     int numHashes = (int) Math.ceil(progress * ((double) PROGRESS_BAR_LENGTH));
@@ -48,15 +62,17 @@ public class CLIViewController implements Controller, Observer {
       int tileRenderSize,
       File saveFile) {
 
-    if (checkValidInputs()) {
+    if (checkValidInputs(targetImage, sourceDirectory, numDuplicatesAllowed,
+        numSubtiles, subtileMatchSize, tileRenderSize)) {
+
       BufferedImage resultImage = null;
       try {
         resultImage = matcher.createPicturePixels(
             targetImage,
             sourceDirectory,
+            numDuplicatesAllowed,
             numSubtiles,
             subtileMatchSize,
-            numDuplicatesAllowed,
             tileRenderSize
         );
       } catch (IllegalStateException e) {

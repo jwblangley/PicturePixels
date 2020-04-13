@@ -204,9 +204,9 @@ public class PicturePixelMatcher extends ObservableProgress {
   public BufferedImage createPicturePixels(
       BufferedImage targetImage,
       File sourceDirectory,
+      int numDuplicatesAllowed,
       int numSubtiles,
       int subtileMatchSize,
-      int numDuplicatesAllowed,
       int tileRenderSize) throws IllegalStateException {
 
     assert targetImage != null;
