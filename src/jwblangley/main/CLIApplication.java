@@ -9,7 +9,7 @@ public class CLIApplication {
   private static final CLIViewController cliController = new CLIViewController(picturePixelMatcher);
 
   public static void launch(String[] args) {
-    if (args.length != 9) {
+    if (!cliController.parseInputsAndRun(args)) {
       showUsage();
       System.exit(1);
     }
@@ -18,6 +18,6 @@ public class CLIApplication {
   public static void showUsage() {
     System.out.println("Usage: java [-Xmx4g] -jar PicturePixels.jar "
         + "nogui run|info <target image> <input directory> <number of duplicates allowed> "
-        + "<number of subtiles> <subtile matchsize> <tile render size> <output file>");
+        + "<number of subtiles> <subtile match size> <tile render size> <output file>");
   }
 }

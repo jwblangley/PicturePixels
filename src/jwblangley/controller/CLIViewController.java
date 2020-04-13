@@ -36,7 +36,6 @@ public class CLIViewController implements Controller, Observer {
     return matcher.numInputsRequired(targetImage, subtileMatchSize, numSubtiles);
   }
 
-
   private void printProgress(double progress) {
     int numHashes = (int) Math.ceil(progress * ((double) PROGRESS_BAR_LENGTH));
     int numSpaces = PROGRESS_BAR_LENGTH - numHashes;
@@ -51,6 +50,69 @@ public class CLIViewController implements Controller, Observer {
   @Override
   public void onNotified() {
     printProgress(matcher.getProgress());
+  }
+
+  public boolean parseInputsAndRun(String[] args) {
+    // Returns false when args structure is incorrect
+
+    if (args.length != 9) {
+      return false;
+    }
+
+    BufferedImage targetImage;
+    File sourceDirectory;
+    int numDuplicates;
+    int numSubtiles;
+    int subtileMatchSize;
+    int tileRenderSize;
+    File saveFile;
+
+    // nogui
+    if (!args[0].equalsIgnoreCase("nogui")) {
+      return false;
+    }
+
+    // run|info
+    // TODO
+
+    // Target Image
+    File targetImageFile = new File(args[0]);
+    try {
+      targetImage = ImageIO.read(targetImageFile);
+    } catch (IOException ex) {
+      reportStatus("Could not read target image");
+      return false;
+    }
+
+    // Input directory
+    // TODO
+
+    // Number of duplicates
+    // TODO
+
+    // Number of subtiles
+    // TODO
+
+    // Subtile match size
+    // TODO
+
+    // Tile render size
+    // TODO
+
+    // Save file
+    // TODO
+
+
+    runPicturePixels(
+        targetImage,
+        sourceDirectory,
+        numSubtiles,
+        subtileMatchSize,
+        numDuplicates,
+        tileRenderSize,
+        saveFile
+    );
+    return true;
   }
 
   public void runPicturePixels(

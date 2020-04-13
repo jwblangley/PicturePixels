@@ -29,6 +29,9 @@ public interface Controller {
       reportStatus("Invalid input directory");
       return false;
     }
+    if (!sourceDirectory.isDirectory()) {
+      reportStatus("Input directory must be a directory");
+    }
     if (numDuplicates < 1) {
       reportStatus("Invalid number of duplicates");
       return false;
