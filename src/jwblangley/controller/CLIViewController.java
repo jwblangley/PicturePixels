@@ -1,5 +1,6 @@
 package jwblangley.controller;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class CLIViewController implements Controller, Observer {
   private void printProgress(double progress) {
     int numHashes = (int) Math.ceil(progress * ((double) PROGRESS_BAR_LENGTH));
     int numSpaces = PROGRESS_BAR_LENGTH - numHashes;
-    System.out.printf("[%s%s] %2.0f%%\n",
+    System.out.printf("[%s%s] %2.0f%%\r",
         String.join("", Collections.nCopies(numHashes, "#")),
         String.join("", Collections.nCopies(numSpaces, " ")),
         progress * 100
@@ -88,7 +89,7 @@ public class CLIViewController implements Controller, Observer {
     }
 
     // Target Image
-    File targetImageFile = new File(args[2]);
+    File targetImageFile = new File(args[2]).getAbsoluteFile();
     try {
       targetImage = ImageIO.read(targetImageFile);
     } catch (IOException ex) {
@@ -132,7 +133,7 @@ public class CLIViewController implements Controller, Observer {
     }
 
     // Save file
-    saveFile = new File(args[8]);
+    saveFile = new File(args[8]).getAbsoluteFile();
     if (saveFile.exists()) {
       reportStatus("Save file already exists");
       return false;
@@ -140,11 +141,18 @@ public class CLIViewController implements Controller, Observer {
     if (!saveFile.getParentFile().isDirectory()) {
       // Checks that parent directory exists and is a directory
       reportStatus("Invalid save file location");
+      return false;
     }
 
     if (info) {
-      // TODO
-
+      reportInfo(
+          targetImage,
+          sourceDirectory,
+          numSubtiles,
+          subtileMatchSize,
+          numDuplicates,
+          tileRenderSize
+      );
     } else {
       runPicturePixels(
           targetImage,
@@ -157,6 +165,26 @@ public class CLIViewController implements Controller, Observer {
       );
     }
     return true;
+  }
+
+  public void reportInfo(
+      BufferedImage targetImage,
+      File sourceDirectory,
+      int numSubtiles,
+      int subtileMatchSize,
+      int numDuplicates,
+      int tileRenderSize
+  ) {
+
+    Dimension resultDim
+        = matcher.resultDimension(targetImage, subtileMatchSize, numSubtiles, tileRenderSize);
+
+    reportStatus(String.format("Inputs/Tiles: %d/%d, Result image: %dx%d",
+        matcher.numCurrentInputs(sourceDirectory, numDuplicates),
+        matcher.numInputsRequired(targetImage, subtileMatchSize, numSubtiles),
+        resultDim.width,
+        resultDim.height)
+    );
   }
 
   public void runPicturePixels(
