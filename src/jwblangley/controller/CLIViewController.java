@@ -142,16 +142,20 @@ public class CLIViewController implements Controller, Observer {
       reportStatus("Invalid save file location");
     }
 
+    if (info) {
+      // TODO
 
-    runPicturePixels(
-        targetImage,
-        sourceDirectory,
-        numSubtiles,
-        subtileMatchSize,
-        numDuplicates,
-        tileRenderSize,
-        saveFile
-    );
+    } else {
+      runPicturePixels(
+          targetImage,
+          sourceDirectory,
+          numSubtiles,
+          subtileMatchSize,
+          numDuplicates,
+          tileRenderSize,
+          saveFile
+      );
+    }
     return true;
   }
 
