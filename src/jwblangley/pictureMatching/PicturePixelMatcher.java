@@ -204,9 +204,9 @@ public class PicturePixelMatcher extends ObservableProgress {
   public BufferedImage createPicturePixels(
       BufferedImage targetImage,
       File sourceDirectory,
+      int numDuplicatesAllowed,
       int numSubtiles,
       int subtileMatchSize,
-      int numDuplicatesAllowed,
       int tileRenderSize) throws IllegalStateException {
 
     assert targetImage != null;
@@ -251,7 +251,7 @@ public class PicturePixelMatcher extends ObservableProgress {
     controller.reportStatus("Compositing result image");
 
     return collateResultFromImages(
-      resultList, targetImage, subtileMatchSize, numSubtiles,tileRenderSize
+        resultList, targetImage, subtileMatchSize, numSubtiles, tileRenderSize
     );
   }
 

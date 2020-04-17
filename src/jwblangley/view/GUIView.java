@@ -111,10 +111,6 @@ public class GUIView {
     numDuplicatesSetter.addObserver(() -> {
       try {
         int numDuplicates = Integer.parseInt(numDuplicatesSetter.getValue());
-        if (numDuplicates < 1) {
-          setStatus("Invalid parameter: # duplicates");
-          return;
-        }
         controller.setNumDuplicatesAllowed(numDuplicates);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
@@ -128,10 +124,6 @@ public class GUIView {
     numSubtilesSetter.addObserver(() -> {
       try {
         int numSubtiles = Integer.parseInt(numSubtilesSetter.getValue());
-        if (numSubtiles < 1) {
-          setStatus("Invalid parameter: # subtiles");
-          return;
-        }
         controller.setNumSubtiles(numSubtiles);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
@@ -145,10 +137,6 @@ public class GUIView {
     subtileSizeSetter.addObserver(() -> {
       try {
         int subtileSize = Integer.parseInt(subtileSizeSetter.getValue());
-        if (subtileSize < 1) {
-          setStatus("Invalid parameter: # subtile size");
-          return;
-        }
         controller.setSubtileMatchSize(subtileSize);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {
@@ -162,10 +150,6 @@ public class GUIView {
     tileRenderSetter.addObserver(() -> {
       try {
         int tileRenderSize = Integer.parseInt(tileRenderSetter.getValue());
-        if (tileRenderSize < 1) {
-          setStatus("Invalid parameter: # tile render size");
-          return;
-        }
         controller.setTileRenderSize(tileRenderSize);
         updateStatusWithNumbers();
       } catch (NumberFormatException e) {

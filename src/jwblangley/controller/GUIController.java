@@ -81,28 +81,27 @@ public class GUIController implements Controller, Observer {
     return matcher.resultDimension(targetImage, subtileMatchSize, numSubtiles, tileRenderSize);
   }
 
-  public int numCurrentInputs() {
+  @Override
+  public int numCurrentInputs(File sourceDirectory, int numDuplicatesAllowed) {
     return matcher.numCurrentInputs(sourceDirectory, numDuplicatesAllowed);
   }
 
-  public int numInputsRequired() {
+  public int numCurrentInputs() {
+    return numCurrentInputs(sourceDirectory, numDuplicatesAllowed);
+  }
+
+  @Override
+  public int numInputsRequired(BufferedImage targetImage, int subtileMatchSize, int numSubtiles) {
     return matcher.numInputsRequired(targetImage, subtileMatchSize, numSubtiles);
   }
 
+  public int numInputsRequired() {
+    return numInputsRequired(targetImage, subtileMatchSize, numSubtiles);
+  }
+
   public boolean checkValidInputs() {
-    if (targetImage == null) {
-      reportStatus("Please select a target image");
-      return false;
-    }
-    if (sourceDirectory == null) {
-      reportStatus("Please select an input directory");
-      return false;
-    }
-    if (numCurrentInputs() < numInputsRequired()) {
-      reportStatus("Not enough inputs with current settings");
-      return false;
-    }
-    return true;
+    return checkValidInputs(targetImage, sourceDirectory, numDuplicatesAllowed,
+        numSubtiles, subtileMatchSize, tileRenderSize);
   }
 
   public void runPicturePixels(Stage window) {
@@ -114,9 +113,9 @@ public class GUIController implements Controller, Observer {
         resultImage = matcher.createPicturePixels(
             targetImage,
             sourceDirectory,
+            numDuplicatesAllowed,
             numSubtiles,
             subtileMatchSize,
-            numDuplicatesAllowed,
             tileRenderSize
         );
       } catch (IllegalStateException e) {
