@@ -55,9 +55,13 @@ public class CLIViewController implements Controller, Observer {
   public boolean parseInputsAndRun(String[] args) {
     // Returns false when args structure is incorrect
 
+    // N.B: Not validating model parameters here as that is done in checkValidInputs
+
     if (args.length != 9) {
       return false;
     }
+
+    boolean info;
 
     BufferedImage targetImage;
     File sourceDirectory;
@@ -73,10 +77,18 @@ public class CLIViewController implements Controller, Observer {
     }
 
     // run|info
-    // TODO
+    String runInfo = args[1];
+    if (runInfo.equalsIgnoreCase("run")) {
+      info = false;
+    } else if (runInfo.equalsIgnoreCase("info")) {
+      info = true;
+    } else {
+      // Invalid input
+      return false;
+    }
 
     // Target Image
-    File targetImageFile = new File(args[0]);
+    File targetImageFile = new File(args[2]);
     try {
       targetImage = ImageIO.read(targetImageFile);
     } catch (IOException ex) {
@@ -85,22 +97,50 @@ public class CLIViewController implements Controller, Observer {
     }
 
     // Input directory
-    // TODO
+    sourceDirectory = new File(args[3]);
 
     // Number of duplicates
-    // TODO
+    try {
+      numDuplicates = Integer.parseInt(args[4]);
+    } catch (NumberFormatException e) {
+      reportStatus("Invalid integer: number of duplicates");
+      return false;
+    }
 
     // Number of subtiles
-    // TODO
+    try {
+      numSubtiles = Integer.parseInt(args[5]);
+    } catch (NumberFormatException e) {
+      reportStatus("Invalid integer: number of subtiles");
+      return false;
+    }
 
     // Subtile match size
-    // TODO
+    try {
+      subtileMatchSize = Integer.parseInt(args[6]);
+    } catch (NumberFormatException e) {
+      reportStatus("Invalid integer: number of duplicates");
+      return false;
+    }
 
     // Tile render size
-    // TODO
+    try {
+      tileRenderSize = Integer.parseInt(args[7]);
+    } catch (NumberFormatException e) {
+      reportStatus("Invalid integer: number of duplicates");
+      return false;
+    }
 
     // Save file
-    // TODO
+    saveFile = new File(args[8]);
+    if (saveFile.exists()) {
+      reportStatus("Save file already exists");
+      return false;
+    }
+    if (!saveFile.getParentFile().isDirectory()) {
+      // Checks that parent directory exists and is a directory
+      reportStatus("Invalid save file location");
+    }
 
 
     runPicturePixels(
