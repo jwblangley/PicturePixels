@@ -251,7 +251,7 @@ public class PicturePixelMatcher extends ObservableProgress {
     controller.reportStatus("Compositing result image");
 
     return collateResultFromImages(
-      resultList, targetImage, subtileMatchSize, numSubtiles,tileRenderSize
+        resultList, targetImage, subtileMatchSize, numSubtiles, tileRenderSize
     );
   }
 

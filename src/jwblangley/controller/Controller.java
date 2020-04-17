@@ -18,7 +18,7 @@ public interface Controller {
       int numSubtiles,
       int subtileMatchSize,
       int tileRenderSize
-      ) {
+  ) {
 
     // Validate inputs/settings
     if (targetImage == null) {
