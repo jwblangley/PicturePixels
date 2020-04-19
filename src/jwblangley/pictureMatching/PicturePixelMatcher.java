@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
@@ -177,6 +179,7 @@ public class PicturePixelMatcher extends ObservableProgress {
         BufferedImage.TYPE_INT_RGB);
 
     Graphics g = resultImage.getGraphics();
+    Lock graphicsLock = new ReentrantLock();
 
     IntStream.range(0, tiles.size()).parallel().forEach(i -> {
       Tile tile = tiles.get(i);
@@ -194,8 +197,10 @@ public class PicturePixelMatcher extends ObservableProgress {
 
       toDraw = ImageUtils.cropSquare(toDraw, CropType.CENTER);
 
+      graphicsLock.lock();
       g.drawImage(toDraw, x * tileRenderSize, y * tileRenderSize, tileRenderSize,
           tileRenderSize, null);
+      graphicsLock.unlock();
     });
 
     return resultImage;
@@ -216,6 +221,9 @@ public class PicturePixelMatcher extends ObservableProgress {
     assert numDuplicatesAllowed > 0;
     assert tileRenderSize > 0;
 
+    // Clear as much memory before starting
+    System.gc();
+
     // Generate targetTiles
     controller.reportStatus("Generating tiles from image");
     List<Tile> targetTiles = generateTilesFromImage(targetImage, subtileMatchSize, numSubtiles);
@@ -224,6 +232,9 @@ public class PicturePixelMatcher extends ObservableProgress {
     controller.reportStatus("Generate tiles from source directory");
     List<Tile> inputTiles = generateTilesFromDirectory(sourceDirectory, numSubtiles);
     assert inputTiles.stream().noneMatch(Tile::isNull);
+
+    // Suggest garbage collection
+    System.gc();
 
     // We only check against number of files regardless of if they are valid images
     if (inputTiles.size() * numDuplicatesAllowed
