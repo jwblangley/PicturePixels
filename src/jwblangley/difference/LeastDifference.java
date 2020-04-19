@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
 import jwblangley.observer.ObservableProgress;
 
@@ -79,7 +81,7 @@ public class LeastDifference extends ObservableProgress {
           long minDiff = Integer.MAX_VALUE;
           int minIndex = -1;
           for (int j = 0; j < unorderedInput.size(); j++) {
-            if (used.incrementAndGet(j) <= numRepeatsAllowed) {
+            if (used.getAndUpdate(j, IntUnaryOperator.identity()) <= numRepeatsAllowed) {
               long diff = diffFunc.absoluteDifference(target.get(i), unorderedInput.get(j));
               if (diff < minDiff) {
                 minDiff = diff;
@@ -88,6 +90,7 @@ public class LeastDifference extends ObservableProgress {
             }
           }
           atomicResult.getAndSet(i, unorderedInput.get(minIndex));
+          used.incrementAndGet(minIndex);
           progress.incrementProgress();
         });
 
