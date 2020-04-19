@@ -81,7 +81,7 @@ public class LeastDifference extends ObservableProgress {
           long minDiff = Integer.MAX_VALUE;
           int minIndex = -1;
           for (int j = 0; j < unorderedInput.size(); j++) {
-            if (used.getAndUpdate(j, IntUnaryOperator.identity()) <= numRepeatsAllowed) {
+            if (used.getAndUpdate(j, IntUnaryOperator.identity()) < numRepeatsAllowed) {
               long diff = diffFunc.absoluteDifference(target.get(i), unorderedInput.get(j));
               if (diff < minDiff) {
                 minDiff = diff;
