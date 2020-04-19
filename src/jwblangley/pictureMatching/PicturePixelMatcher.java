@@ -222,7 +222,7 @@ public class PicturePixelMatcher extends ObservableProgress {
     assert tileRenderSize > 0;
 
     // Clear as much memory before starting
-    // System.gc();
+    System.gc();
 
     // Generate targetTiles
     controller.reportStatus("Generating tiles from image");
@@ -234,7 +234,7 @@ public class PicturePixelMatcher extends ObservableProgress {
     assert inputTiles.stream().noneMatch(Tile::isNull);
 
     // Suggest garbage collection
-    // System.gc();
+    System.gc();
 
     // We only check against number of files regardless of if they are valid images
     if (inputTiles.size() * numDuplicatesAllowed
