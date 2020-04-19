@@ -79,7 +79,7 @@ public class LeastDifference extends ObservableProgress {
           long minDiff = Integer.MAX_VALUE;
           int minIndex = -1;
           for (int j = 0; j < unorderedInput.size(); j++) {
-            if (used.get(j) < numRepeatsAllowed) {
+            if (used.incrementAndGet(j) <= numRepeatsAllowed) {
               long diff = diffFunc.absoluteDifference(target.get(i), unorderedInput.get(j));
               if (diff < minDiff) {
                 minDiff = diff;
@@ -87,8 +87,7 @@ public class LeastDifference extends ObservableProgress {
               }
             }
           }
-          atomicResult.set(i, unorderedInput.get(minIndex));
-          used.incrementAndGet(minIndex);
+          atomicResult.getAndSet(i, unorderedInput.get(minIndex));
           progress.incrementProgress();
         });
 
@@ -96,6 +95,7 @@ public class LeastDifference extends ObservableProgress {
     List<T> result = new LinkedList<>();
 
     // Sequentially add all elements
+    // N.B: Non-atomic function get is okay here as this is now sequential
     for (int i = 0; i < target.size(); i++) {
       result.add(atomicResult.get(i));
     }
