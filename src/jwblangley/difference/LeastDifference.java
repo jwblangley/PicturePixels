@@ -3,8 +3,9 @@ package jwblangley.difference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import jwblangley.observer.ObservableProgress;
 
@@ -33,24 +34,31 @@ public class LeastDifference extends ObservableProgress {
     assert unorderedInput.size() * numRepeatsAllowed >= target.size()
         : "Not enough input to match to target";
 
-    List<T> result = new LinkedList<>();
+    List<T> result = new ArrayList<>(Collections.nCopies(target.size(), null));
 
     int[] used = new int[unorderedInput.size()];
     Arrays.fill(used, 0);
 
-    for (T t : target) {
+    List<Integer> randOrder = IntStream.range(0, target.size())
+        .boxed()
+        .collect(Collectors.toList());
+    Collections.shuffle(randOrder);
+
+    for (int i : randOrder) {
+      T targetItem = target.get(i);
+
       long minDiff = Integer.MAX_VALUE;
       int minIndex = -1;
       for (int j = 0; j < unorderedInput.size(); j++) {
         if (used[j] < numRepeatsAllowed) {
-          long diff = diffFunc.absoluteDifference(t, unorderedInput.get(j));
+          long diff = diffFunc.absoluteDifference(targetItem, unorderedInput.get(j));
           if (diff < minDiff) {
             minDiff = diff;
             minIndex = j;
           }
         }
       }
-      result.add(unorderedInput.get(minIndex));
+      result.set(i, unorderedInput.get(minIndex));
       used[minIndex]++;
 
       // Progress update
@@ -58,6 +66,9 @@ public class LeastDifference extends ObservableProgress {
         progress.incrementProgress();
       }
     }
+
+    assert result.stream().noneMatch(Objects::isNull);
+
     return result;
   }
 
@@ -85,7 +96,6 @@ public class LeastDifference extends ObservableProgress {
     List<T> input = new ArrayList<>(unorderedInput);
 
     for (int i = 0; i < numShuffles; i++) {
-      Collections.shuffle(input);
       List<T> result;
 
       result = basicNearestNeighbourMatch(
